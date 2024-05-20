@@ -19,20 +19,13 @@ const username = ({ params }) => {
         <div className='supporters w-1/2 bg-slate-900  rounded-lg p-5'>
           <h2 className='text-2xl font-bold my-5'>Supporters</h2>
           <ul id='style-4' className='mx-5 h-[300px] overflow-y-auto'>
-            <li className='my-2 text-lg flex gap-2 items-center'><img src='mammoth-unscreen.gif' width={50}/>Chetan donated 30rs with message ""</li>
-            <li className='my-2 text-lg flex items-center'><img src='mammoth-unscreen.gif' width={50}/>Chetan donated 30rs with message ""</li>
-            <li className='my-2 text-lg flex items-center'><img src='mammoth-unscreen.gif' width={50}/>Chetan donated 30rs with message ""</li>
-            <li className='my-2 text-lg flex items-center'><img src='mammoth-unscreen.gif' width={50}/>Chetan donated 30rs with message ""</li>
-            <li className='my-2 text-lg flex items-center'><img src='mammoth-unscreen.gif' width={50}/>Chetan donated 30rs with message ""</li>
-            <li className='my-2 text-lg flex items-center'><img src='mammoth-unscreen.gif' width={50}/>Chetan donated 30rs with message ""</li>
-            <li className='my-2 text-lg flex items-center'><img src='mammoth-unscreen.gif' width={50}/>Chetan donated 30rs with message ""</li>
-            <li className='my-2 text-lg flex items-center'><img src='mammoth-unscreen.gif' width={50}/>Chetan donated 30rs with message ""</li>
-            <li className='my-2 text-lg flex items-center'><img src='mammoth-unscreen.gif' width={50}/>Chetan donated 30rs with message ""</li>
-            <li className='my-2 text-lg flex items-center'><img src='mammoth-unscreen.gif' width={50}/>Chetan donated 30rs with message ""</li>
-            
-           
-
-
+            <li className='my-2 text-lg flex gap-2 items-center '><img src={`user${Math.floor(Math.random() * 5) + 1}.gif`} width={50}/><div className='flex flex-wrap gap-x-1'><span className='text-blue-300'> Chetan</span><span> donated </span><span className='font-bold'>30rs</span>with message <span></span> <span className='text-yellow-200'>"Love you brother . I Love you.Love you brother . I Love you.Love you brother . I Love you."</span></div></li>
+            <li className='my-2 text-lg flex gap-2 items-center '><img src={`user${Math.floor(Math.random() * 5) + 1}.gif`} width={50}/><div className='flex flex-wrap gap-x-1'><span className='text-blue-300'> Chetan</span><span> donated </span><span className='font-bold'>30rs</span>with message <span></span> <span className='text-yellow-200'>"Love you brother . I Love you.Love you brother . I Love you.Love you brother . I Love you."</span></div></li>
+            <li className='my-2 text-lg flex gap-2 items-center '><img src={`user${Math.floor(Math.random() * 5) + 1}.gif`} width={50}/><div className='flex flex-wrap gap-x-1'><span className='text-blue-300'> Chetan</span><span> donated </span><span className='font-bold'>30rs</span>with message <span></span> <span className='text-yellow-200'>"Love you brother . I Love you.Love you brother . I Love you.Love you brother . I Love you."</span></div></li>
+            <li className='my-2 text-lg flex gap-2 items-center '><img src={`user${Math.floor(Math.random() * 5) + 1}.gif`} width={50}/><div className='flex flex-wrap gap-x-1'><span className='text-blue-300'> Chetan</span><span> donated </span><span className='font-bold'>30rs</span>with message <span></span> <span className='text-yellow-200'>"Love you brother . I Love you.Love you brother . I Love you.Love you brother . I Love you."</span></div></li>
+            <li className='my-2 text-lg flex gap-2 items-center '><img src={`user${Math.floor(Math.random() * 5) + 1}.gif`} width={50}/><div className='flex flex-wrap gap-x-1'><span className='text-blue-300'> Chetan</span><span> donated </span><span className='font-bold'>30rs</span>with message <span></span> <span className='text-yellow-200'>"Love you brother . I Love you.Love you brother . I Love you.Love you brother . I Love you."</span></div></li>
+            <li className='my-2 text-lg flex gap-2 items-center '><img src={`user${Math.floor(Math.random() * 5) + 1}.gif`} width={50}/><div className='flex flex-wrap gap-x-1'><span className='text-blue-300'> Chetan</span><span> donated </span><span className='font-bold'>30rs</span>with message <span></span> <span className='text-yellow-200'>"Love you brother . I Love you.Love you brother . I Love you.Love you brother . I Love you."</span></div></li>
+            <li className='my-2 text-lg flex gap-2 items-center '><img src={`user${Math.floor(Math.random() * 5) + 1}.gif`} width={50}/><div className='flex flex-wrap gap-x-1'><span className='text-blue-300'> Chetan</span><span> donated </span><span className='font-bold'>30rs</span>with message <span></span> <span className='text-yellow-200'>"Love you brother . I Love you.Love you brother . I Love you.Love you brother . I Love you."</span></div></li>
           </ul>
         </div>
         <div className='supporters_payment bg-slate-900 rounded-lg w-1/2 p-5 h-fit'>

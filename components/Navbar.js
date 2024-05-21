@@ -7,6 +7,10 @@ import Link from 'next/link'
 const Navbar = () => {
   const { data: session } = useSession()
   const [showdropdown, setshowdropdown] = useState(false)
+
+  const log = (same)=>{
+    console.log(same)
+  }
   // if(session) {
   //   return <>
   //     Signed in as {session.user.email} <br/>
@@ -14,7 +18,7 @@ const Navbar = () => {
   //   </>
   // }
   return (
-    <nav className='bg-blue-800 text-white flex justify-between h-[6vh] items-center px-4'>
+    <nav className='bg-blue-800 text-white flex justify-between h-[8vh] items-center px-4'>
       <div className='logo'>
         GetMeAPopCorn
       </div>
@@ -36,21 +40,19 @@ const Navbar = () => {
               <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4" />
             </svg>
             </button>
-
-
             <div id="dropdown" className={`z-10 absolute top-[6vh] ${showdropdown ? "" : "hidden"} bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700`}>
               <ul className="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDefaultButton">
-                <li>
+                <li onClick={()=>log("dashboard")} >
                   <Link href="/dashboard" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Dashboard</Link>
                 </li>
                 <li>
-                  <Link href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Settings</Link>
+                  <Link href="#"  onClick={()=>log("Setting")} className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Settings</Link>
                 </li>
                 <li>
-                  <a href={`/${session.user.name}`} className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Your Page</a>
+                  <Link href={`/${session.user.name}`} onClick={()=>log("pages")} className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Your Page</Link>
                 </li>
                 <li>
-                  <Link href="/login" onClick={()=>signOut()} className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Sign out</Link>
+                  <Link href="/login" onClick={()=>log("sign out")} className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Sign out</Link>
                 </li>
               </ul>
             </div>

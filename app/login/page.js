@@ -1,10 +1,23 @@
 "use client"
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSession, signIn, signOut } from "next-auth/react"
 
 const Login = () => {
-    const { data: session } = useSession()
+    const { data: session,status } = useSession()
+    const router = useRouter()
+    useEffect(()=>{
+        if(status === 'loading') return;
+        if(!session) return; 
+        if (session.user.firstTimeLogin) {
+                router.push('/welcome')
+            }
+        else{
+            // console.log(session.user.firstTimeLogin)
+            
+            router.push('/welcome')
+        }
+    },[session,status])
     // if (session) {
     //     const router = useRouter()
     //     router.push('/dashboard')

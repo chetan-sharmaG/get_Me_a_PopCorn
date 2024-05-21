@@ -7,10 +7,12 @@ const UserSchema = new Schema({
     username: { type: String, required: true },
     profilePic: { type: String },
     coverPic: { type: String },
+    firstTimeLogin: { type: Boolean, default: true },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
+    
 });
 
 
 
-export default mongoose.models.User ||model("User",UserSchema);
+export default mongoose.models.User || model("User", UserSchema);

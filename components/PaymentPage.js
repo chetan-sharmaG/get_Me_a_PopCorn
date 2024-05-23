@@ -1,41 +1,49 @@
 "use client"
-import React from 'react'
-import { useState,useEffect } from 'react'
+import React, { useRef } from 'react'
+import { useState, useEffect } from 'react'
 import Script from 'next/script'
-import { fetchPayments, initiate ,fetchUser} from '@/actions/useractions'
+import { fetchPayments, initiate, fetchUser } from '@/actions/useractions'
 
 const PaymentPage = ({ username }) => {
     const [paymentform, setpaymentform] = useState({})
     const [currentUser, setcurrentUser] = useState({})
     const [searchResult, setsearchResult] = useState(null)
-    const [Payments, setPayments] = useState({})
+    const [Payments, setPayments] = useState([])
 
     useEffect(() => {
-      getData()
-    
-    }, [])
-    
-    const handleChange =(e)=>{
+        getData()
 
-        setpaymentform({...paymentform,[e.target.name]:e.target.value})
+    }, [])
+
+    const handleChange = (e) => {
+
+        setpaymentform({ ...paymentform, [e.target.name]: e.target.value })
         console.log(paymentform)
     }
+    if (!currentUser) {
+        return <>
+            <div className='flex h-[100vh] w-[100vw] items-center flex-col justify-center '>
+                <span className='text-6xl'>404: No such user Found</span>
+                <a href='/' className='bg-orange-200 rounded-lg w-fit p-3 m-3 text-black'> &larr; Go Back To Home</a>
+            </div>
+        </>
+    }
+    const getData = async () => {
 
-    const getData =async()=>{
+        // let u = await fetchUser(username)
+        let u = true
+        setsearchResult(u ? true : false)
+        setcurrentUser(u)
+        // let dbPayments = await fetchPayments(username)
+        // setPayments(dbPayments)
+        // console.log(u, dbPayments)
 
-            let u = await fetchUser(username)
-            setsearchResult(u?false:true)
-            setcurrentUser(u)
-            let dbPayments = await fetchPayments(username)
-            setPayments(dbPayments)
-            console.log(u,dbPayments)
+    }
 
-    }   
+    const pay = async (amount) => {
 
-    const pay = async(amount) => {
-
-        let a = await initiate(amount,username,paymentform)
-        let orderId =a.id
+        let a = await initiate(amount, username, paymentform)
+        let orderId = a.id
         var options = {
             "key": process.env.NEXT_PUBLIC_KEY_ID, // Enter the Key ID generated from the Dashboard
             "amount": amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
@@ -62,65 +70,71 @@ const PaymentPage = ({ username }) => {
         rzp1.open();
 
     }
+    const coverPicture = useRef()
 
+    
 
     return (
         <>
-            
+
             {/* <button id="rzp-button1">Pay</button> */}
             <Script src="https://checkout.razorpay.com/v1/checkout.js"></Script>
-           {currentUser &&
-           <>
-            <div className='cover w-full relative'>
-                <img className='w-full  object-fill h-[400px]' src={currentUser.coverPic} />
-                <div className='absolute bottom-[-53px] left-[50%] translate-x-[-50%]'>
-                    <img className='rounded-xl object-cover h-[150px] w-[150px]'  src={currentUser.profilePic} />
-                </div>
-            </div>
-            <div className='flex flex-col justify-center items-center my-16 gap-2' >
-                <span> @{username}</span>
-                <div className='text-slate-400'>Creating Trailer Reactions, Movie Reviews, Short Films, Vlogs an</div>
-                <div className='text-slate-400 '>28,239 members2,368 posts</div>
+            {searchResult &&
+                <>
+                    <div className='cover w-full relative z-10 '>
+                        <div className='relative group'>
+                            <img className='w-full object-fill h-[400px] relative ' src={currentUser.coverPic} />
+                            <div className=' flex  p-10 group-hover:flex z-20 flex-col items-center justify-center absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] '><span>Edit</span><img width="48" height="48" src="https://img.icons8.com/color/48/edit-image.png" className='cursor-pointer' alt="edit-image" />
+                            <input accept="image/*" type="file" className='opacity-0 absolute'/></div>
+                        </div>
+                        <div className='absolute bottom-[-53px] left-[50%] translate-x-[-50%]'>
+                            <img className='rounded-xl object-cover h-[150px] w-[150px]' src={currentUser.profilePic} />
+                        </div>
+                    </div>
+                    <div className='flex flex-col justify-center items-center my-16 gap-2' >
+                        <span> @{username}</span>
+                        <div className='text-slate-400'>Creating Trailer Reactions, Movie Reviews, Short Films, Vlogs an</div>
+                        <div className='text-slate-400 '>28,239 members2,368 posts</div>
 
-            </div>
-            <div className='Supporters_Box flex w-[80%] mx-auto gap-3 my-16'>
-                <div className='supporters w-1/2 bg-slate-900  rounded-lg p-5'>
-                    <h2 className='text-2xl font-bold my-5'>Supporters</h2>
-                    <ul id='style-4' className='mx-5 h-[300px] overflow-y-auto'>
-                        <li className='my-2 text-lg flex gap-2 items-center'><img src='mammoth-unscreen.gif' width={50} />Chetan donated 30rs with message ""</li>
-                        <li className='my-2 text-lg flex items-center'><img src='mammoth-unscreen.gif' width={50} />Chetan donated 30rs with message ""</li>
-                        <li className='my-2 text-lg flex items-center'><img src='mammoth-unscreen.gif' width={50} />Chetan donated 30rs with message ""</li>
-                        <li className='my-2 text-lg flex items-center'><img src='mammoth-unscreen.gif' width={50} />Chetan donated 30rs with message ""</li>
-                        <li className='my-2 text-lg flex items-center'><img src='mammoth-unscreen.gif' width={50} />Chetan donated 30rs with message ""</li>
-                        <li className='my-2 text-lg flex items-center'><img src='mammoth-unscreen.gif' width={50} />Chetan donated 30rs with message ""</li>
-                        <li className='my-2 text-lg flex items-center'><img src='mammoth-unscreen.gif' width={50} />Chetan donated 30rs with message ""</li>
-                        <li className='my-2 text-lg flex items-center'><img src='mammoth-unscreen.gif' width={50} />Chetan donated 30rs with message ""</li>
-                        <li className='my-2 text-lg flex items-center'><img src='mammoth-unscreen.gif' width={50} />Chetan donated 30rs with message ""</li>
-                        <li className='my-2 text-lg flex items-center'><img src='mammoth-unscreen.gif' width={50} />Chetan donated 30rs with message ""</li>
-                    </ul>
-                </div>
-                <div className='supporters_payment bg-slate-900 rounded-lg w-1/2 p-5 h-fit'>
-                    <h2 className='font-bold text-2xl my-5'>Make a Payment</h2>
-                    <div className='flex flex-col gap-2'>
-                        <input type='text' onChange={handleChange} name="name" value={paymentform.name} placeholder='Enter Name' className='w-full p-3 bg-slate-800 rounded-lg'></input>
-                        <input type='text' onChange={handleChange} value={paymentform.messgae} name='message' placeholder='Enter Message' className='w-full p-3 bg-slate-800 rounded-lg'></input>
-                        <input type='number'onChange={handleChange} value={paymentform.amount} name="amount" placeholder='Enter Amount' className='w-full p-3 bg-slate-800 rounded-lg'></input>
-                        <button  onClick={()=>pay(Number.parseInt(paymentform.amount)*100)} className="cursor-pointer transition-all bg-blue-500 text-white px-6 py-2 rounded-lg border-blue-600
+                    </div>
+                    <div className='Supporters_Box flex w-[80%] mx-auto gap-3 my-16'>
+                        <div className='supporters w-1/2 bg-slate-900  rounded-lg p-5'>
+                            <h2 className='text-2xl font-bold my-5'>Supporters</h2>
+                            <ul id='style-4' className='mx-5 h-[300px] overflow-y-auto'>
+                                {Payments.map((item) => {
+                                    if (item.done) {
+                                        return (<>
+                                            <>
+                                                <li className='my-2 text-lg flex gap-2 items-center '><img src={`user${Math.floor(Math.random() * 5) + 1}.gif`} width={50} /><div className='flex flex-wrap gap-x-1'><span className='text-blue-300'> {item.name}</span><span> donated </span><span className='font-bold'>{item.amount}rs</span>with message <span></span> <span className='text-yellow-200'>"{item.message}"</span></div></li>
+                                            </>
+                                        </>)
+                                    }
+
+                                })}
+                            </ul>
+                        </div>
+                        <div className='supporters_payment bg-slate-900 rounded-lg w-1/2 p-5 h-fit'>
+                            <h2 className='font-bold text-2xl my-5'>Make a Payment</h2>
+                            <div className='flex flex-col gap-2'>
+                                <input type='text' onChange={handleChange} name="name" value={paymentform.name} placeholder='Enter Name' className='w-full p-3 bg-slate-800 rounded-lg'></input>
+                                <input type='text' onChange={handleChange} value={paymentform.messgae} name='message' placeholder='Enter Message' className='w-full p-3 bg-slate-800 rounded-lg'></input>
+                                <input type='number' onChange={handleChange} value={paymentform.amount} name="amount" placeholder='Enter Amount' className='w-full p-3 bg-slate-800 rounded-lg'></input>
+                                <button onClick={() => pay(Number.parseInt(paymentform.amount) * 100)} className="cursor-pointer transition-all bg-blue-500 text-white px-6 py-2 rounded-lg border-blue-600
 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px]
 active:border-b-[2px] active:brightness-90 active:translate-y-[2px]">
-                            Pay
-                        </button>
-                    </div>
-                    <div className='flex gap-5 mt-5'>
-                        <button className='p-3 bg-slate-800 rounded-xl' onClick={()=>pay(50 *100)}>Pay 50&#8377;</button>
-                        <button className='p-3 bg-slate-800 rounded-xl'  onClick={()=>pay(500 *100)}>Pay 500&#8377;</button>
-                        <button className='p-3 bg-slate-800 rounded-xl' onClick={()=>pay(1000 *100)}>Pay 100&#8377;</button>
-                    </div>
-                </div>
+                                    Pay
+                                </button>
+                            </div>
+                            <div className='flex gap-5 mt-5'>
+                                <button className='p-3 bg-slate-800 rounded-xl' onClick={() => pay(50 * 100)}>Pay 50&#8377;</button>
+                                <button className='p-3 bg-slate-800 rounded-xl' onClick={() => pay(500 * 100)}>Pay 500&#8377;</button>
+                                <button className='p-3 bg-slate-800 rounded-xl' onClick={() => pay(1000 * 100)}>Pay 100&#8377;</button>
+                            </div>
+                        </div>
 
-            </div>
-           </>
-           }
+                    </div>
+                </>
+            }
         </>
     )
 }

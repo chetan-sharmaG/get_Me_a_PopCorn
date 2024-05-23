@@ -19,9 +19,9 @@ const Navbar = () => {
   // }
   return (
     <nav className='bg-blue-800 text-white flex justify-between h-[8vh] items-center px-4'>
-      <div className='logo'>
+      <a className='logo' href='/'>
         GetMeAPopCorn
-      </div>
+      </a>
       {/* <ul className='flex gap-5'>
           <li>Home</li>
           <li>About</li>

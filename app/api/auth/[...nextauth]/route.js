@@ -1,7 +1,7 @@
 import NextAuth from 'next-auth'
 // import AppleProvider from 'next-auth/providers/apple'
 // import FacebookProvider from 'next-auth/providers/facebook'
-// import GoogleProvider from 'next-auth/providers/google'
+import GoogleProvider from 'next-auth/providers/google'
 // import EmailProvider from 'next-auth/providers/email'
 import GitHubProvider from "next-auth/providers/github";
 import mongoose from 'mongoose';
@@ -22,11 +22,11 @@ export const authoptions = NextAuth({
     GitHubProvider({
       clientId: process.env.GITHUB_ID,
       clientSecret: process.env.GITHUB_SECRET
-    })
-    // GoogleProvider({
-    //   clientId: process.env.GOOGLE_ID,
-    //   clientSecret: process.env.GOOGLE_SECRET
-    // }),
+    }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_ID,
+      clientSecret: process.env.GOOGLE_SECRET
+    }),
     // // Passwordless / email sign in
     // EmailProvider({
     //   server: process.env.MAIL_SERVER,
@@ -38,6 +38,25 @@ export const authoptions = NextAuth({
     async signIn({ user, account, profile, email, credentials }) {
       if (account.provider == "github") {
         //connect to db
+        await connectDB()
+        // const client = await mongoose.connect("mongodb://localhost:27017/popcorn");
+        //Check if the user exists
+        const currentUser = await User.findOne({email:user.email})
+        console.log("user="+user.name)
+      
+      
+        if(!currentUser){
+          console.log("Creating User")
+          const newUser =await User.create({
+            email:user.email,
+            username : user.name,
+            coverPic:'https://64.media.tumblr.com/09e2bef3a1fbf60fa4e77a64184454ff/tumblr_ou7xynInI91snbyiqo2_540.gifv',
+            profilePic:'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcjY5cGh5M213aHozMHltdmM4Y3EyZXBoMTUwMjhyd3YwN3hhbTl2NCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l4FGvzjS7yqXX7NHW/giphy.gif'
+          })
+        }
+        return true
+      }
+      else if(account.provider==='google'){
         await connectDB()
         // const client = await mongoose.connect("mongodb://localhost:27017/popcorn");
         //Check if the user exists

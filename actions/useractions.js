@@ -41,3 +41,16 @@ export const fetchPayments =async(username)=>{
     let p = await Payment.find({to_user:username}).sort({amount:-1}).lean()
     return p
 }
+
+export const checkIfUserExist = async(username)=>{
+    
+    await connectDB()
+    let u = await User.findOne({username:username})
+    if(u){
+        return true
+    }
+    else{
+        return false
+    }
+
+}

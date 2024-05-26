@@ -3,18 +3,92 @@ import React, { useRef } from 'react'
 import { useState, useEffect } from 'react'
 import Script from 'next/script'
 import { fetchPayments, initiate, fetchUser } from '@/actions/useractions'
+import { useSession, signIn, signOut } from "next-auth/react"
+import { uploadFile } from '@/actions/useractions'
+import { updatePageDetails } from '@/actions/useractions'
+
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+import Dialog from './Dialog'
+
+
 
 const PaymentPage = ({ username }) => {
+
+    const { data: session, status } = useSession()
     const [paymentform, setpaymentform] = useState({})
     const [currentUser, setcurrentUser] = useState({})
+    const [form, setform] = useState({})
     const [searchResult, setsearchResult] = useState(null)
     const [Payments, setPayments] = useState([])
+    const [userDetails, setuserDetails] = useState('')
+    const [profileImageUrl, setprofileImageUrl] = useState(null)
+    const [coverImageUrl, setcoverImageUrl] = useState(null)
+    const [coverPic, setcoverPic] = useState()
+    const [profilePic, setprofilePic] = useState()
+    const [CoverFile, setCoverFile] = useState()
+    const profileRef = useRef()
+
+
+    const coverRef = useRef()
+    const saveButton = useRef()
+    let CoverPicture
+    let ProfilePicture = ''
+
+
+    const handleFileChange = (e) => {
+        const { name, files } = e.target
+        if (name === 'coverPic') {
+            setcoverPic(files[0])
+            saveButton.current.style.display = "flex"
+            const url = URL.createObjectURL(files[0]);
+            setcoverImageUrl(url)
+            coverRef.current.style.opacity = 0
+        }
+        else if (name === 'profilePic') {
+            setprofilePic(files[0])
+            saveButton.current.style.display = "flex"
+            const url = URL.createObjectURL(files[0]);
+            setprofileImageUrl(url)
+            profileRef.current.style.opacity = 0
+        }
+    }
+
+    const handleformChange = (e) => {
+        saveButton.current.style.display = "flex"
+        setform({ ...form, [e.target.name]: e.target.value })
+        console.log(form)
+    }
+    // const handleFileChangeforCover = async (e) => {
+    //     const file = e.target.files[0]
+    //     if (file) {
+    //         // formData.append('coverPic', file)
+    //         setCoverFile(file)
+
+    //         saveButton.current.style.display = "flex"
+    //         console.log(file)
+    //         // let a = await uploadFile(session.user.email,file)
+    //         const url = URL.createObjectURL(file);
+    //         setcoverImageUrl(url)
+    //         coverRef.current.style.opacity = 0
+    //         // setform({ ...form, [e.target.name]: url })
+
+    //     }
+    // }
 
     useEffect(() => {
         getData()
 
     }, [])
 
+    useEffect(() => {
+        if (status === "authenticated") {
+            if (session) {
+                setuserDetails(session.user)
+            }
+        }
+    }, [status])
     const handleChange = (e) => {
 
         setpaymentform({ ...paymentform, [e.target.name]: e.target.value })
@@ -30,14 +104,49 @@ const PaymentPage = ({ username }) => {
     }
     const getData = async () => {
 
-        // let u = await fetchUser(username)
-        let u = true
+        let u = await fetchUser(username)
+        // let u = {
+        //     email:
+        //         "cs7804@gmail.com",
+        //     username:
+        //         "chetan-sharmaG",
+        //     description:
+        //         "About you",
+        //     profilePic:
+        //         "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcjY5cGh5M213aHozMHltd…",
+        //     coverPic:
+        //         "https://64.media.tumblr.com/09e2bef3a1fbf60fa4e77a64184454ff/tumblr_ou…",
+        //     isfan:
+        //         " che",
+        //     firstTimeSetupDone:
+        //         true,
+        //     firstTimeLogin:
+        //         false,
+        //     createdAt:
+        //         "2024-05 - 23T13: 51: 40.689+00:00",
+        //     updatedAt:
+        //         "2024-05 - 23T13: 51: 40.690+00:00",
+
+        //     TeamName:
+        //         "cheannel4 ",
+        //     pageName:
+        //         "chetan"
+        // }
         setsearchResult(u ? true : false)
         setcurrentUser(u)
-        // let dbPayments = await fetchPayments(username)
-        // setPayments(dbPayments)
-        // console.log(u, dbPayments)
 
+        console.log(u)
+        if (u)
+            setform({ ...form, TeamName: u.TeamName, description: u.description })
+
+        let dbPayments = await fetchPayments(username)
+        setPayments(dbPayments)
+        console.log(u, dbPayments)
+
+    }
+
+    const saveData = () => {
+        console.log("saving")
     }
 
     const pay = async (amount) => {
@@ -70,37 +179,224 @@ const PaymentPage = ({ username }) => {
         rzp1.open();
 
     }
-    const coverPicture = useRef()
+    const uploadInFirebase = async()=>{
+        console.log("sending")
+        const formdata = new FormData()
+        // console.log(CoverFile)
+        if (coverPic) {
+            formdata.append('coverPic', coverPic)
+        }
+        if (profilePic) {
+            formdata.append('profilePic', profilePic)
+        }
+        const res = await fetch('https://pop-corn-back-end.vercel.app/upload', {
+            method: 'POST',
+            body: formdata,
 
-    
+        })
+        const result = await res.json();
 
+        if (result.coverPic) {
+
+            setform((prevForm)=>({ ...prevForm, coverPic: result.coverPic.fileUrl }))
+            const interval = setInterval(() => {
+                console.log("waiting for form to be set")
+                if (form.coverPic) {
+                    clearInterval(interval);
+                    // do something
+                }
+            }, 1000); // checks every second
+        }
+        if (result.profilePic) {
+            setform((prevForm)=>({ ...prevForm, profilePic: result.profilePic.fileUrl }))
+            const interval = setInterval(() => {
+                if (form.profilePic) {
+                    clearInterval(interval);
+                }
+            }, 1000); // checks every second
+        }
+         
+        return true
+    }
+    const updateUserData = async () => {
+        let wait = await uploadInFirebase()
+        console.log(form)
+        let a = await updatePageDetails(currentUser.email, form)
+        if (a) {
+            toast('Page Details Updated!', {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggable: true,
+                progress: undefined,
+                theme: "dark"
+            });
+        } else {
+
+        }
+
+    }
+    const copyToClipboard = () => {
+
+        navigator.clipboard.writeText(`${process.env.NEXT_PUBLIC_HOST}${currentUser.pageName}`)
+        toast('Copied to Clipboard', {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            progress: undefined,
+            theme: "dark"
+        });
+    }
+
+
+
+
+    // const coverPicture = useRef()
     return (
         <>
-
+            <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+                transition="Bounce"
+            />
+            {/* Same as */}
+            <ToastContainer />
             {/* <button id="rzp-button1">Pay</button> */}
             <Script src="https://checkout.razorpay.com/v1/checkout.js"></Script>
             {searchResult &&
                 <>
                     <div className='cover w-full relative z-10 '>
-                        <div className='relative group'>
-                            <img className='w-full object-fill h-[400px] relative ' src={currentUser.coverPic} />
-                            <div className=' flex  p-10 group-hover:flex z-20 flex-col items-center justify-center absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] '><span>Edit</span><img width="48" height="48" src="https://img.icons8.com/color/48/edit-image.png" className='cursor-pointer' alt="edit-image" />
-                            <input accept="image/*" type="file" className='opacity-0 absolute'/></div>
+
+
+                        <div ref={saveButton} className='absolute hidden gap-2 top-3 right-20 z-30'>
+                            <button className='bg-orange-400 w-[100px] p-3 text-black rounded-lg ' onClick={() => updateUserData()}>Save</button>
+                            <button className='bg-gray-600  w-[100px] p-3 text-black rounded-lg '>Cancel</button>
+                        </div>
+
+                        <div className={`relative group ${currentUser.coverPic?"":"bg-pink-400 h-[400px] w-full"}`}>
+                            {currentUser.coverPic &&  <img className='w-full object-fill h-[400px] relative ' ref={profileRef} src={currentUser.coverPic} />}
+                           
+                            {userDetails.email === currentUser.email &&
+                                <>
+                                    <div className=' hidden  p-10 group-hover:flex z-20 flex-col items-center justify-center absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] '><span>Edit</span><img width="48" height="48" src="https://img.icons8.com/color/48/edit-image.png" alt="edit-image" />
+                                        <input accept="image/*" onChange={handleFileChange} name='profilePic' type="file" className='opacity-0 cursor-pointer absolute' /></div>
+                                </>
+                            }
+                            {profileImageUrl &&
+                                <img className='w-full object-fill h-[400px] absolute top-0 ' src={profileImageUrl} />
+                            }
                         </div>
                         <div className='absolute bottom-[-53px] left-[50%] translate-x-[-50%]'>
-                            <img className='rounded-xl object-cover h-[150px] w-[150px]' src={currentUser.profilePic} />
+                            <div className={`relative group ${currentUser.profilePic?"":"bg-orange-400 rounded-xl h-[150px] w-[150px] "}`}>
+                                {currentUser.profilePic && <img className='rounded-xl object-cover h-[150px] w-[150px]' ref={coverRef} src={currentUser.profilePic} />}
+                            
+                                {userDetails.email === currentUser.email &&
+                                    <>
+                                        <div className=' hidden  p-10 group-hover:flex z-20 flex-col items-center justify-center absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] '><span className='text-black font-bold '>Edit</span><img width="48" height="48" src="https://img.icons8.com/color/48/edit-image.png" alt="edit-image" />
+                                            <input accept="image/*" name='coverPic' onChange={handleFileChange} type="file" className='opacity-0 cursor-pointer absolute' /></div>
+                                    </>
+                                }
+                                {coverImageUrl &&
+                                    <img className='rounded-xl object-cover h-[150px] w-[150px] absolute top-0 ' src={coverImageUrl} />
+                                }
+                            </div>
                         </div>
                     </div>
-                    <div className='flex flex-col justify-center items-center my-16 gap-2' >
-                        <span> @{username}</span>
-                        <div className='text-slate-400'>Creating Trailer Reactions, Movie Reviews, Short Films, Vlogs an</div>
-                        <div className='text-slate-400 '>28,239 members2,368 posts</div>
+                    <div className='flex flex-col justify-center items-center my-16 gap-2 relative' >
+                        <div className='absolute top-[-50px] right-4'>
+                            <div className='flex gap-2 items-center'>
+                                <div className='group'>
+                                    <button
 
+                                        title="Create Post"
+                                        className="group cursor-pointer outline-none hover:rotate-90 duration-300"
+                                    >
+                                        <svg
+
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="30px"
+                                            height="30px"
+                                            viewBox="0 0 24 24"
+                                            className="stroke-zinc-400 fill-none group-hover:fill-zinc-800 group-active:stroke-zinc-200 group-active:fill-zinc-600 group-active:duration-0 duration-300"
+                                        >
+                                            <path
+                                                d="M12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22Z"
+                                                strokeWidth="1.5"
+                                            ></path>
+                                            <path d="M8 12H16" strokeWidth="1.5"></path>
+                                            <path d="M12 16V8" strokeWidth="1.5"></path>
+                                        </svg>
+                                    </button>
+
+                                </div>
+                                <svg className='cursor-pointer' xmlns="http://www.w3.org/2000/svg" fill='white' x="0px" y="0px" width="25" height="25" viewBox="0 0 50 50">
+                                    <path d="M 22.199219 2 A 1.0001 1.0001 0 0 0 21.214844 2.8339844 L 20.205078 8.796875 C 19.01608 9.1476749 17.903339 9.6072866 16.835938 10.173828 L 11.875 6.6816406 A 1.0001 1.0001 0 0 0 10.59375 6.7929688 L 6.6933594 10.693359 A 1.0001 1.0001 0 0 0 6.5820312 11.974609 L 10.076172 16.939453 C 9.5032306 17.983292 9.0447681 19.109183 8.6992188 20.298828 L 2.8457031 21.212891 A 1.0001 1.0001 0 0 0 2 22.199219 L 2 27.699219 A 1.0001 1.0001 0 0 0 2.8339844 28.685547 L 8.7949219 29.693359 C 9.1451119 30.880887 9.6045402 31.990547 10.169922 33.056641 L 6.6875 37.917969 A 1.0001 1.0001 0 0 0 6.7929688 39.207031 L 10.693359 43.107422 A 1.0001 1.0001 0 0 0 11.974609 43.21875 L 16.939453 39.724609 C 17.985462 40.298683 19.114316 40.757752 20.306641 41.103516 L 21.314453 47.066406 A 1.0001 1.0001 0 0 0 22.300781 47.900391 L 27.800781 47.900391 A 1.0001 1.0001 0 0 0 28.783203 47.082031 L 29.884766 41.107422 C 31.077734 40.756262 32.193186 40.294742 33.263672 39.726562 L 38.224609 43.21875 A 1.0001 1.0001 0 0 0 39.507812 43.107422 L 43.40625 39.207031 A 1.0001 1.0001 0 0 0 43.509766 37.914062 L 39.931641 32.957031 C 40.500209 31.91951 40.957756 30.82106 41.300781 29.693359 L 47.169922 28.685547 A 1.0001 1.0001 0 0 0 48 27.699219 L 48 22.199219 A 1.0001 1.0001 0 0 0 47.166016 21.214844 L 41.199219 20.203125 C 40.855563 19.074235 40.397841 17.973827 39.828125 16.935547 L 43.318359 11.974609 A 1.0001 1.0001 0 0 0 43.207031 10.693359 L 39.306641 6.7929688 A 1.0001 1.0001 0 0 0 38.013672 6.6894531 L 33.052734 10.273438 C 32.009656 9.7017023 30.885686 9.2413677 29.697266 8.8964844 L 28.685547 2.8359375 A 1.0001 1.0001 0 0 0 27.699219 2 L 22.199219 2 z M 23.044922 4 L 26.853516 4 L 27.814453 9.7636719 A 1.0001 1.0001 0 0 0 28.556641 10.570312 C 30.07104 10.948913 31.478126 11.514935 32.675781 12.251953 A 1.0001 1.0001 0 0 0 33.785156 12.210938 L 38.494141 8.8085938 L 41.197266 11.511719 L 37.882812 16.224609 A 1.0001 1.0001 0 0 0 37.847656 17.324219 C 38.584675 18.521874 39.154586 19.937607 39.533203 21.357422 A 1.0001 1.0001 0 0 0 40.333984 22.085938 L 46 23.044922 L 46 26.857422 L 40.429688 27.814453 A 1.0001 1.0001 0 0 0 39.632812 28.542969 C 39.254196 29.962783 38.686237 31.378517 37.949219 32.576172 A 1.0001 1.0001 0 0 0 37.990234 33.685547 L 41.390625 38.394531 L 38.6875 41.097656 L 33.974609 37.78125 A 1.0001 1.0001 0 0 0 32.904297 37.732422 C 31.566632 38.496802 30.2627 39.053466 28.757812 39.429688 A 1.0001 1.0001 0 0 0 28.017578 40.21875 L 26.966797 45.900391 L 23.144531 45.900391 L 22.185547 40.232422 A 1.0001 1.0001 0 0 0 21.443359 39.429688 C 19.92896 39.051088 18.521874 38.485065 17.324219 37.748047 A 1.0001 1.0001 0 0 0 16.224609 37.78125 L 11.511719 41.097656 L 8.8066406 38.392578 L 12.113281 33.783203 A 1.0001 1.0001 0 0 0 12.167969 32.703125 C 11.403582 31.365465 10.846925 30.061529 10.470703 28.556641 A 1.0001 1.0001 0 0 0 9.6660156 27.814453 L 4 26.855469 L 4 23.056641 L 9.5546875 22.1875 A 1.0001 1.0001 0 0 0 10.371094 21.443359 C 10.749694 19.92896 11.313763 18.521874 12.050781 17.324219 A 1.0001 1.0001 0 0 0 12.017578 16.224609 L 8.7011719 11.511719 L 11.412109 8.8027344 L 16.125 12.117188 A 1.0001 1.0001 0 0 0 17.195312 12.167969 C 18.532978 11.403589 19.836909 10.846925 21.341797 10.470703 A 1.0001 1.0001 0 0 0 22.085938 9.6660156 L 23.044922 4 z M 25 17 C 20.570085 17 17 20.570085 17 25 C 17 29.429915 20.570085 33 25 33 C 29.429915 33 33 29.429915 33 25 C 33 20.570085 29.429915 17 25 17 z M 25 19 C 28.370085 19 31 21.629915 31 25 C 31 28.370085 28.370085 31 25 31 C 21.629915 31 19 28.370085 19 25 C 19 21.629915 21.629915 19 25 19 z"></path>
+                                </svg>
+
+                            </div>
+
+                        </div>
+                        <span className='flex gap-2 items-center'>
+                            <input type='text' name='TeamName' onBlur={() => saveData} disabled={userDetails.email === currentUser.email ? false : true} className='bg-transparent hover:border border-white w-fit text-center' onChange={handleformChange} value={form.TeamName} />
+                        </span>
+                        <div className='text-slate-400'><input type='text' disabled={userDetails.email === currentUser.email ? false : true} name='description' className={`bg-transparent ${userDetails.email === currentUser.email ? "hover:border border-white" : ""} w-fit text-center`} onChange={handleformChange} value={form.description} /></div>
+                        <div onClick={() => copyToClipboard()} className='flex gap-1 items-center cursor-pointer'>
+                            <img width="15" height="15" className='invert-[1]' src="https://img.icons8.com/material-rounded/24/link--v1.png" alt="link--v1" />
+                            <span className='text-xs'>Popcorn/{currentUser.pageName}</span>
+                        </div>
+                        {/* <div className='text-slate-400 '>0 members 0 posts</div> */}
+                        {userDetails.email === currentUser.email && <button className="bg-rose-950 text-rose-400 border border-rose-400 border-b-4 font-medium overflow-hidden relative px-4 py-2 rounded-md hover:brightness-150 hover:border-t-4 hover:border-b active:opacity-75 outline-none duration-300 group">
+                            <span className="bg-rose-400 shadow-rose-400 absolute -top-[150%] left-0 inline-flex w-80 h-[5px] rounded-md opacity-50 group-hover:top-[150%] duration-500 shadow-[0_0_10px_10px_rgba(0,0,0,0.3)]"></span>
+                            Join now
+                        </button>}
+                    </div>
+                    <div className='relative w-[350px] h-[400px] mx-auto '>
+                        <div className='flex flex-col gap-10 items-center p-5 rounded-xl h-fit bg-slate-700 relative'>
+                            <div className='text-xl font-bold'>
+                                Select a type
+                            </div>
+                            <div className='flex w-full justify-evenly'>
+                                <div className='flex flex-col gap-1 text-sm font-bold'><img width="30" height="30" src="https://img.icons8.com/fluency/30/text.png" alt="text" /><button>Text</button></div>
+                                <div className='flex flex-col gap-1 text-sm font-bold'><lord-icon
+                                    src="https://cdn.lordicon.com/mpzsxzrz.json"
+                                    trigger="hover"
+                                    style={{ "width": "50px", "height": "50px" }}>
+                                </lord-icon><button>Text</button></div>
+                                <div className='flex flex-col gap-1 text-sm font-bold'>
+                                    <lord-icon
+                                        src="https://cdn.lordicon.com/ujxzdfjx.json"
+                                        trigger="hover"
+                                        style={{ "width": "50px", "height": "50px" }}>
+                                    </lord-icon>
+                                    <button>Text</button></div>
+
+                            </div>
+                            <div className='flex w-full justify-evenly mb-10'>
+                                <div className='flex flex-col gap-1 text-sm font-bold'><img width="30" height="30" src="https://img.icons8.com/fluency/30/text.png" alt="text" /><button>Text</button></div>
+                                <div className='flex flex-col gap-1 text-sm font-bold'><img width="30" height="30" src="https://img.icons8.com/dusk/30/video.png" alt="video" /><button>Text</button></div>
+                                <div className='flex flex-col text-sm gap-1 font-bold'><img width="30" height="30" src="https://img.icons8.com/dusk/64/high-volume--v1.png" alt="high-volume--v1" /><button>Text</button></div>
+
+                            </div>
+                        </div>
                     </div>
                     <div className='Supporters_Box flex w-[80%] mx-auto gap-3 my-16'>
                         <div className='supporters w-1/2 bg-slate-900  rounded-lg p-5'>
                             <h2 className='text-2xl font-bold my-5'>Supporters</h2>
                             <ul id='style-4' className='mx-5 h-[300px] overflow-y-auto'>
+                                {Payments.length ===0 && "No Payments Yet"}
                                 {Payments.map((item) => {
                                     if (item.done) {
                                         return (<>

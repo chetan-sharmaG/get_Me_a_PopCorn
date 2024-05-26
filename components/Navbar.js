@@ -62,7 +62,7 @@ const Navbar = () => {
 
 
         {session &&
-          <button type="button" onClick={() => { signOut() }} className="text-white bg-[#24292F] hover:bg-[#24292F]/90 focus:ring-0 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2 text-center inline-flex items-center  dark:hover:bg-[#050708]/30  ">
+          <button type="button" onClick={() => { signOut({ callbackUrl: '/', redirect:true }) }} className="text-white bg-[#24292F] hover:bg-[#24292F]/90 focus:ring-0 focus:outline-none  font-medium rounded-lg text-sm px-5 py-2 text-center inline-flex items-center  dark:hover:bg-[#050708]/30  ">
             Logout
           </button>}
         {!session && <Link href={"/login"}>

@@ -9,13 +9,13 @@ const Login = () => {
     useEffect(()=>{
         if(status === 'loading') return;
         if(!session) return; 
-        if (session.user.firstTimeLogin) {
+        if (!session.user.firstTimeSetupDone) {
                 router.push('/welcome')
             }
         else{
             // console.log(session.user.firstTimeLogin)
             
-            router.push('/welcome')
+            router.push(`/${session.user.pageName}`)
         }
     },[session,status])
     // if (session) {

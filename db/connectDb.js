@@ -6,6 +6,7 @@ const connectDB = async () => {
         useNewUrlParser: true,
       });
       console.log(`MongoDB Connected: ${conn.connection.host}`);
+      console.log(`mongodb+srv://cs7804:cs7804@cluster0.aqk4ehm.mongodb.net/PopCorn?retryWrites=true&w=majority&appName=Cluster0`)
     } catch (error) {
       console.error(error.message);
       process.exit(1);

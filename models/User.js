@@ -2,6 +2,23 @@
 import mongoose from "mongoose";
 const { Schema, model } = mongoose;
 
+const PostScheme = new Schema({
+    postTitle: {
+        type: String,
+        
+      },
+      postDescription: {
+        type: String,
+      },
+      postUrl: {
+        type: String,
+       
+      },
+      postRedirect:{
+        type: String,
+      }
+    });
+
 const UserSchema = new Schema({
     email: { type: String, required: true },
     username: { type: String, required: true },
@@ -13,6 +30,7 @@ const UserSchema = new Schema({
     coverPic: { type: String },
     isfan: { type: String, required: false, default: " che" },
     firstTimeSetupDone: { type: Boolean, default: false },
+    posts:[PostScheme],
     razorpayId: { type: String },
     razorpaySecret: { type: String },
     post: { type: Number, default: 0 },

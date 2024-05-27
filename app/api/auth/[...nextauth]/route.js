@@ -9,8 +9,9 @@ import User from '@/models/User';
 import Payment from '@/models/Payment';
 import connectDB from '@/db/connectDb';
 export const authoptions = NextAuth({
-  
+  secret: process.env.NEXTAUTH_SECRET,
   providers: [
+    
     // OAuth authentication providers...
     // AppleProvider({
     //   clientId: process.env.APPLE_ID,
@@ -93,7 +94,7 @@ export const authoptions = NextAuth({
       return session
     },
   },
-  secret: process.env.NEXTAUTH_SECRET
+  
 
 })
 

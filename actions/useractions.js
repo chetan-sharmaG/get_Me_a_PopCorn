@@ -67,7 +67,7 @@ export const PageCreation = async (email, newpageName, TeamName) => {
         $set: {
             pageName: newpageName,
             firstTimeSetupDone: true,
-             TeamName: TeamName
+            TeamName: TeamName
         }
     }, { new: true })
     if (updatedDetail.TeamName === TeamName && updatedDetail.pageName === newpageName) {
@@ -93,24 +93,42 @@ export const RazorPayDetails = async (email, razorpayId, razorpaySecret) => {
 }
 
 
-export const uploadFile = async(email,file)=>{
+export const uploadFile = async (email, file) => {
 
     await connectDB()
-    const data = await User.findOneAndUpdate({email:email},{$set:{coverPic:file }},{new:true})
+    const data = await User.findOneAndUpdate({ email: email }, { $set: { coverPic: file } }, { new: true })
     console.log(data)
 
 }
 
-export const updatePageDetails = async(email,form)=>{
+export const updatePageDetails = async (email, form) => {
 
     await connectDB()
-     const data = await User.findOneAndUpdate({email:email},{$set:form},{new:true})
-     console.log(data)
-     if(data){
+    const data = await User.findOneAndUpdate({ email: email }, { $set: form }, { new: true })
+    console.log(data)
+    if (data) {
         return true
-     }
-     else{
-        return false 
-     }
+    }
+    else {
+        return false
+    }
+
+}
+
+export const createPost = async (email, form) => {
+
+    await connectDB()
+    const data = await User.findOneAndUpdate({ email: email }, {
+        $set: {
+            posts: form
+        }}
+        ,{ new: true })
+    console.log(data)
+    if (data) {
+        return true
+    }
+    else {
+        return false
+    }
 
 }

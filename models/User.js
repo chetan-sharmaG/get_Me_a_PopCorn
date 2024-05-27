@@ -18,7 +18,7 @@ const PostScheme = new Schema({
         type: String,
       }
     });
-
+    
 const UserSchema = new Schema({
     email: { type: String, required: true },
     username: { type: String, required: true },

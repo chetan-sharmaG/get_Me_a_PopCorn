@@ -9,12 +9,14 @@ import { updatePageDetails } from '@/actions/useractions'
 import Post from './Post'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
-
+import { useRouter } from 'next/navigation'
+import { createPost } from '@/actions/useractions'
 
 
 
 const PaymentPage = ({ username }) => {
+
+    const router = useRouter()
 
     const { data: session, status } = useSession()
     const [paymentform, setpaymentform] = useState({})
@@ -29,15 +31,36 @@ const PaymentPage = ({ username }) => {
     const [profilePic, setprofilePic] = useState()
     const [CoverFile, setCoverFile] = useState()
     const profileRef = useRef()
+    const [postform, setpostform] = useState({})
     const [display, setdisplay] = useState(false)
     const [likes, setlikes] = useState(false)
     const coverRef = useRef()
     const saveButton = useRef()
-    let CoverPicture
-    let ProfilePicture = ''
     const [uploadComplete, setUploadComplete] = useState(false);
 
 
+    const handlePostFormChanges = (e) => {
+        const { name, value } = e.target
+        setpostform({ ...postform, [name]: value })
+        console.log(postform)
+    }
+
+    const CreatePost = () => {
+        console.log("Posting")
+        let a = createPost(session.user.email, postform)
+        toast('Post Created !!!', {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            progress: undefined,
+            theme: "dark"
+        });
+        setdisplay(!display)
+
+    }
     const handleFileChange = (e) => {
         const { name, files } = e.target
         if (name === 'coverPic') {
@@ -90,6 +113,7 @@ const PaymentPage = ({ username }) => {
             }
         }
     }, [status])
+
     const handleChange = (e) => {
 
         setpaymentform({ ...paymentform, [e.target.name]: e.target.value })
@@ -106,33 +130,7 @@ const PaymentPage = ({ username }) => {
     const getData = async () => {
 
         let u = await fetchUser(username)
-        // let u = {
-        //     email:
-        //         "cs7804@gmail.com",
-        //     username:
-        //         "chetan-sharmaG",
-        //     description:
-        //         "About you",
-        //     profilePic:
-        //         "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcjY5cGh5M213aHozMHltd…",
-        //     coverPic:
-        //         "https://64.media.tumblr.com/09e2bef3a1fbf60fa4e77a64184454ff/tumblr_ou…",
-        //     isfan:
-        //         " che",
-        //     firstTimeSetupDone:
-        //         true,
-        //     firstTimeLogin:
-        //         false,
-        //     createdAt:
-        //         "2024-05 - 23T13: 51: 40.689+00:00",
-        //     updatedAt:
-        //         "2024-05 - 23T13: 51: 40.690+00:00",
 
-        //     TeamName:
-        //         "cheannel4 ",
-        //     pageName:
-        //         "chetan"
-        // }
         setsearchResult(u ? true : false)
         setcurrentUser(u)
 
@@ -253,33 +251,6 @@ const PaymentPage = ({ username }) => {
     const uploadData = async () => {
         setUploadComplete(false);
         await uploadInFirebase();
-        // await uploadInFirebase()
-        // console.log(form)
-        // let a = await updatePageDetails(currentUser.email, form)
-        // if (a) {
-        //     toast('Page Details Updated!', {
-        //         position: "top-right",
-        //         autoClose: 3000,
-        //         hideProgressBar: false,
-        //         closeOnClick: true,
-        //         pauseOnHover: false,
-        //         draggable: true,
-        //         progress: undefined,
-        //         theme: "dark"
-        //     });
-        // } else {
-        //     toast('Failed to update Page Details', {
-        //         position: "top-right",
-        //         autoClose: 3000,
-        //         hideProgressBar: false,
-        //         closeOnClick: true,
-        //         pauseOnHover: false,
-        //         draggable: true,
-        //         progress: undefined,
-        //         theme: "dark"
-        //     });
-        // }
-
     }
     const copyToClipboard = () => {
 
@@ -295,6 +266,7 @@ const PaymentPage = ({ username }) => {
             theme: "dark"
         });
     }
+
 
 
 
@@ -321,7 +293,7 @@ const PaymentPage = ({ username }) => {
             <Script src="https://checkout.razorpay.com/v1/checkout.js"></Script>
             {searchResult &&
                 <>
-                    
+
                     <div className='cover w-full relative z-10 '>
 
 
@@ -426,7 +398,7 @@ const PaymentPage = ({ username }) => {
 
                         </div>
                         <span className='flex gap-2 items-center'>
-                            <input type='text' name='TeamName' onBlur={() => saveData} disabled={userDetails.email === currentUser.email ? false : true} className='bg-transparent hover:border border-white w-fit text-center' onChange={handleformChange} value={form.TeamName} />
+                            <input type='text' name='TeamName' disabled={userDetails.email === currentUser.email ? false : true} className='bg-transparent hover:border border-white w-fit text-center' onChange={handleformChange} value={form.TeamName} />
                         </span>
                         <div className='text-slate-400'><input type='text' disabled={userDetails.email === currentUser.email ? false : true} name='description' className={`bg-transparent ${userDetails.email === currentUser.email ? "hover:border border-white" : ""} w-fit text-center`} onChange={handleformChange} value={form.description} /></div>
                         <div onClick={() => copyToClipboard()} className='flex gap-1 items-center cursor-pointer'>
@@ -434,51 +406,200 @@ const PaymentPage = ({ username }) => {
                             <span className='text-xs'>Popcorn/{currentUser.pageName}</span>
                         </div>
                         {/* <div className='text-slate-400 '>0 members 0 posts</div> */}
-                        {userDetails.email === currentUser.email && <button className="bg-rose-950 text-rose-400 border border-rose-400 border-b-4 font-medium overflow-hidden relative px-4 py-2 rounded-md hover:brightness-150 hover:border-t-4 hover:border-b active:opacity-75 outline-none duration-300 group">
+                        {userDetails.email !== currentUser.email && <button className="bg-rose-950 text-rose-400 border border-rose-400 border-b-4 font-medium overflow-hidden relative px-4 py-2 rounded-md hover:brightness-150 hover:border-t-4 hover:border-b active:opacity-75 outline-none duration-300 group">
                             <span className="bg-rose-400 shadow-rose-400 absolute -top-[150%] left-0 inline-flex w-80 h-[5px] rounded-md opacity-50 group-hover:top-[150%] duration-500 shadow-[0_0_10px_10px_rgba(0,0,0,0.3)]"></span>
                             Join now
                         </button>}
                     </div>
                     <div className='w-[100vw] h-[1px] opacity-45 bg-white mb-5'></div>
-                    <div className="posts w-[80%] mx-auto flex flex-col gap-5 ">
-                        <span className='text-2xl my-2'>Recent Post By {currentUser.TeamName}</span>
-                        <div className='flex flex-col justify-center w-[50%] mx-auto rounded-lg bg-slate-500 py-3'>
-                            <div className='title px-4 m-1 text-xl'>Virat the King  </div>
-                            <div className='title px-4 m-1 text-sm'>Just Now</div>
-                            <p className='title px-4 m-1 text-sm whitespace-pre-line' >Virat Kohli!
-                                is an Indian international cricketer and the former captain of the Indian national cricket team. He is a right-handed batsman and an occasional medium-fast bowler. He currently represents Royal Challengers Bengaluru in the
-                                India</p>
-                            <div className='title px-4 m-1 text-xl'>
-                                <img src='https://images.indianexpress.com/2024/05/VIRAT-KOHLI-ORANGE-CAP-PTI-CROP-1.jpg' />
+                    {display && 
+                    <>
+                     <div className="create_posts w-[80%] mx-auto flex flex-col items-center justify-center gap-5 my-10">
+                        <span className='text-2xl my-2 self-start'>Create a Post</span>
+                        <div className='w-[50%] h-[400px] rounded-xl  flex-col'>
+                            <input
+                                placeholder="Title" name='postTitle' onChange={handlePostFormChanges}
+                                className="bg-[#292929] my-3 w-full border-2 border-[#3e3e3e] rounded-lg text-white px-6 py-3 text-base hover:border-[#fff]  transition"
+                                type="text"
+                            />
+                            <textarea
+                                name='postDescription'
+                                onChange={handlePostFormChanges}
+                                placeholder="Description" rows={5}
+                                className="bg-[#292929] w-full my-3 border-2 border-[#3e3e3e] rounded-lg text-white px-6 py-3 text-base hover:border-[#fff]  transition"
+                                type="text"
+                            />
+                            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white" htmlFor="file_input">Upload file</label>
+                            <input className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" aria-describedby="file_input_help" id="file_input" type="file" />
+                            <p className="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">Video,Image and Audio Only</p>
+                            <div className="w-full mt-5 flex items-center justify-center cursor-pointer" >
+                                <div
+                                    className="relative inline-flex items-center justify-start py-3 pl-4 pr-12 overflow-hidden font-semibold shadow text-indigo-600 transition-all duration-150 ease-in-out rounded hover:pl-10 hover:pr-6 bg-gray-50 dark:bg-gray-700 dark:text-white dark:hover:text-gray-200 dark:shadow-none group"
+                                >
+                                    <span
+                                        className="absolute bottom-0 left-0 w-full h-1 transition-all duration-150 ease-in-out bg-indigo-600 group-hover:h-full"
+                                    ></span>
+                                    <span
+                                        className="absolute right-0 pr-4 duration-200 ease-out group-hover:translate-x-12"
+                                    >
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                            fill="none"
+                                            className="w-5 h-5 text-green-400"
+                                        >
+                                            <path
+                                                d="M14 5l7 7m0 0l-7 7m7-7H3"
+                                                strokeWidth="2"
+                                                strokeLinejoin="round"
+                                                strokeLinecap="round"
+                                            ></path>
+                                        </svg>
+                                    </span>
+                                    <span
+                                        className="absolute left-0 pl-2.5 -translate-x-12 group-hover:translate-x-0 ease-out duration-200"
+                                    >
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                            fill="none"
+                                            className="w-5 h-5 text-green-400"
+                                        >
+                                            <path
+                                                d="M14 5l7 7m0 0l-7 7m7-7H3"
+                                                strokeWidth="2"
+                                                strokeLinejoin="round"
+                                                strokeLinecap="round"
+                                            ></path>
+                                        </svg>
+                                    </span>
+                                    <span onClick={CreatePost}
+                                        className="relative w-full text-left transition-colors duration-200 ease-in-out group-hover:text-white dark:group-hover:text-gray-200"
+                                    >Post Now!!</span
+                                    >
+                                </div>
                             </div>
-                            <div className='title px-6 my-4 text-sm flex gap-5 items-center' onClick={() => setlikes(!likes)}>
-                                <svg className='cursor-pointer' xmlns="http://www.w3.org/2000/svg" stroke={likes ? "red" : "blac"} fill={likes ? "red" : "#64748B"} width="24" height="24" viewBox="0 0 24 24">
-                                    <title>Like</title>
-                                    <path d="M12 4.248c-3.148-5.402-12-3.825-12 2.944 0 4.661 5.571 9.427 12 15.808 6.43-6.381 12-11.147 12-15.808 0-6.792-8.875-8.306-12-2.944z" /></svg>
-                                <svg className='cursor-pointer' xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" width="26px" height="26" viewBox="0 0 24 24" version="1.1">
 
-                                    <title>Comment</title>
-
-                                    <g id="🔍-System-Icons" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
-                                        <g id="ic_fluent_comment_add_24_regular" fill="#212121" fill-rule="nonzero">
-                                            <path d="M12.0222817,2.99927567 C11.7253991,3.46285541 11.4857535,3.96661073 11.3133148,4.50057151 L5.25,4.5 C4.28350169,4.5 3.5,5.28350169 3.5,6.25 L3.5,14.75 C3.5,15.7164983 4.28350169,16.5 5.25,16.5 L7.49878573,16.5 L7.49985739,20.2505702 L12.5135149,16.5 L18.75,16.5 C19.7164983,16.5 20.5,15.7164983 20.5,14.75 L20.5010736,12.2672297 C21.0520148,11.9799518 21.5566422,11.6160435 22.0008195,11.1896412 L22,14.75 C22,16.5449254 20.5449254,18 18.75,18 L13.0124851,18 L7.99868152,21.7506795 C7.44585139,22.1641649 6.66249789,22.0512036 6.2490125,21.4983735 C6.08735764,21.2822409 6,21.0195912 6,20.7499063 L5.99921427,18 L5.25,18 C3.45507456,18 2,16.5449254 2,14.75 L2,6.25 C2,4.45507456 3.45507456,3 5.25,3 L12.0222817,2.99927567 Z M17.5,1 C20.5375661,1 23,3.46243388 23,6.5 C23,9.53756612 20.5375661,12 17.5,12 C14.4624339,12 12,9.53756612 12,6.5 C12,3.46243388 14.4624339,1 17.5,1 Z M17.5,2.5 L17.4101244,2.50805567 C17.2060313,2.54509963 17.0450996,2.70603131 17.0080557,2.91012437 L17,3 L16.999,6 L14,6 L13.9101244,6.00805567 C13.7060313,6.04509963 13.5450996,6.20603131 13.5080557,6.41012437 L13.5,6.5 L13.5080557,6.58987563 C13.5450996,6.79396869 13.7060313,6.95490037 13.9101244,6.99194433 L14,7 L16.999,7 L17,10 L17.0080557,10.0898756 C17.0450996,10.2939687 17.2060313,10.4549004 17.4101244,10.4919443 L17.5,10.5 L17.5898756,10.4919443 C17.7939687,10.4549004 17.9549004,10.2939687 17.9919443,10.0898756 L18,10 L17.999,7 L21,7 L21.0898756,6.99194433 C21.2939687,6.95490037 21.4549004,6.79396869 21.4919443,6.58987563 L21.5,6.5 L21.4919443,6.41012437 C21.4549004,6.20603131 21.2939687,6.04509963 21.0898756,6.00805567 L21,6 L17.999,6 L18,3 L17.9919443,2.91012437 C17.9549004,2.70603131 17.7939687,2.54509963 17.5898756,2.50805567 L17.5,2.5 Z" id="🎨-Color">
-
-                                            </path>
-                                        </g>
-                                    </g>
-                                </svg>
-                            </div>
                         </div>
-                        <div className='flex flex-col justify-center w-[50%] mx-auto rounded-lg bg-slate-500 py-3'>
-                            <div className='title px-4 m-1 text-xl'>Virat the King  </div>
-                            <div className='title px-4 m-1 text-sm'>Just Now</div>
-                            <div className='title px-4 m-1 text-sm'>Virat Kohli is an Indian international cricketer and the former captain of the Indian national cricket team. He is a right-handed batsman and an occasional medium-fast bowler. He currently represents Royal Challengers Bengaluru in the</div>
-                            <div className='title px-4 m-1 text-xl'>
-                                <img src='https://images.indianexpress.com/2024/05/VIRAT-KOHLI-ORANGE-CAP-PTI-CROP-1.jpg' />
+
+                    </div>
+                    </>}
+                    <div className="posts w-[80%] mx-auto flex flex-col gap-5 ">
+                        {userDetails.email === currentUser.email ? <span className='text-2xl my-2'>Your Recent Posts</span> : <span className='text-2xl my-2'>Recent Posts By {currentUser.TeamName}</span>}
+
+                        <div id='style-4' className="flex gap-5 overflow-x-scroll ">
+                            <div className='flex flex-col justify-center  min-w-[450px] min-h-[450px] rounded-lg bg-slate-500 py-3'>
+                                <div className='title px-4 m-1 text-xl'>Virat the King  </div>
+                                <div className='title px-4 m-1 text-sm'>Just Now</div>
+                                <p className='title px-4 m-1 text-sm whitespace-pre-line' >Virat Kohli!
+                                    is an Indian international cricketer and the former captain of the Indian national cricket team. He is a right-handed batsman and an occasional medium-fast bowler. He currently represents Royal Challengers Bengaluru in the
+                                    India</p>
+                                <div className='title px-4 m-1 text-xl'>
+                                    <img src='https://images.indianexpress.com/2024/05/VIRAT-KOHLI-ORANGE-CAP-PTI-CROP-1.jpg' />
+                                </div>
+                                <div className='title px-6 my-4 text-sm flex gap-5 items-center' onClick={() => setlikes(!likes)}>
+                                    <svg className='cursor-pointer' xmlns="http://www.w3.org/2000/svg" stroke={likes ? "red" : "black"} fill={likes ? "red" : "#64748B"} width="24" height="24" viewBox="0 0 24 24">
+                                        <title>Like</title>
+                                        <path d="M12 4.248c-3.148-5.402-12-3.825-12 2.944 0 4.661 5.571 9.427 12 15.808 6.43-6.381 12-11.147 12-15.808 0-6.792-8.875-8.306-12-2.944z" /></svg>
+                                    <svg className='cursor-pointer' xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" width="26px" height="26" viewBox="0 0 24 24" version="1.1">
+
+                                        <title>Comment</title>
+
+                                        <g id="🔍-System-Icons" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
+                                            <g id="ic_fluent_comment_add_24_regular" fill="#212121" fillRule="nonzero">
+                                                <path d="M12.0222817,2.99927567 C11.7253991,3.46285541 11.4857535,3.96661073 11.3133148,4.50057151 L5.25,4.5 C4.28350169,4.5 3.5,5.28350169 3.5,6.25 L3.5,14.75 C3.5,15.7164983 4.28350169,16.5 5.25,16.5 L7.49878573,16.5 L7.49985739,20.2505702 L12.5135149,16.5 L18.75,16.5 C19.7164983,16.5 20.5,15.7164983 20.5,14.75 L20.5010736,12.2672297 C21.0520148,11.9799518 21.5566422,11.6160435 22.0008195,11.1896412 L22,14.75 C22,16.5449254 20.5449254,18 18.75,18 L13.0124851,18 L7.99868152,21.7506795 C7.44585139,22.1641649 6.66249789,22.0512036 6.2490125,21.4983735 C6.08735764,21.2822409 6,21.0195912 6,20.7499063 L5.99921427,18 L5.25,18 C3.45507456,18 2,16.5449254 2,14.75 L2,6.25 C2,4.45507456 3.45507456,3 5.25,3 L12.0222817,2.99927567 Z M17.5,1 C20.5375661,1 23,3.46243388 23,6.5 C23,9.53756612 20.5375661,12 17.5,12 C14.4624339,12 12,9.53756612 12,6.5 C12,3.46243388 14.4624339,1 17.5,1 Z M17.5,2.5 L17.4101244,2.50805567 C17.2060313,2.54509963 17.0450996,2.70603131 17.0080557,2.91012437 L17,3 L16.999,6 L14,6 L13.9101244,6.00805567 C13.7060313,6.04509963 13.5450996,6.20603131 13.5080557,6.41012437 L13.5,6.5 L13.5080557,6.58987563 C13.5450996,6.79396869 13.7060313,6.95490037 13.9101244,6.99194433 L14,7 L16.999,7 L17,10 L17.0080557,10.0898756 C17.0450996,10.2939687 17.2060313,10.4549004 17.4101244,10.4919443 L17.5,10.5 L17.5898756,10.4919443 C17.7939687,10.4549004 17.9549004,10.2939687 17.9919443,10.0898756 L18,10 L17.999,7 L21,7 L21.0898756,6.99194433 C21.2939687,6.95490037 21.4549004,6.79396869 21.4919443,6.58987563 L21.5,6.5 L21.4919443,6.41012437 C21.4549004,6.20603131 21.2939687,6.04509963 21.0898756,6.00805567 L21,6 L17.999,6 L18,3 L17.9919443,2.91012437 C17.9549004,2.70603131 17.7939687,2.54509963 17.5898756,2.50805567 L17.5,2.5 Z" id="🎨-Color">
+
+                                                </path>
+                                            </g>
+                                        </g>
+                                    </svg>
+                                </div>
                             </div>
-                            <div className='title px-5 my-4 text-sm' onClick={() => setlikes(!likes)}>
-                                <svg xmlns="http://www.w3.org/2000/svg" stroke={likes ? "red" : "black"} fill={likes ? "red" : "#64748B"} width="24" height="24" viewBox="0 0 24 24"><path d="M12 4.248c-3.148-5.402-12-3.825-12 2.944 0 4.661 5.571 9.427 12 15.808 6.43-6.381 12-11.147 12-15.808 0-6.792-8.875-8.306-12-2.944z" /></svg>
+                            <div className='flex flex-col justify-center  min-w-[450px] min-h-[450px] rounded-lg bg-slate-500 py-3'>
+                                <div className='title px-4 m-1 text-xl'>Virat the King  </div>
+                                <div className='title px-4 m-1 text-sm'>Just Now</div>
+                                <p className='title px-4 m-1 text-sm whitespace-pre-line' >Virat Kohli!
+                                    is an Indian international cricketer and the former captain of the Indian national cricket team. He is a right-handed batsman and an occasional medium-fast bowler. He currently represents Royal Challengers Bengaluru in the
+                                    India</p>
+                                <div className='title px-4 m-1 text-xl'>
+                                    <img src='https://images.indianexpress.com/2024/05/VIRAT-KOHLI-ORANGE-CAP-PTI-CROP-1.jpg' />
+                                </div>
+                                <div className='title px-6 my-4 text-sm flex gap-5 items-center' onClick={() => setlikes(!likes)}>
+                                    <svg className='cursor-pointer' xmlns="http://www.w3.org/2000/svg" stroke={likes ? "red" : "black"} fill={likes ? "red" : "#64748B"} width="24" height="24" viewBox="0 0 24 24">
+                                        <title>Like</title>
+                                        <path d="M12 4.248c-3.148-5.402-12-3.825-12 2.944 0 4.661 5.571 9.427 12 15.808 6.43-6.381 12-11.147 12-15.808 0-6.792-8.875-8.306-12-2.944z" /></svg>
+                                    <svg className='cursor-pointer' xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" width="26px" height="26" viewBox="0 0 24 24" version="1.1">
+
+                                        <title>Comment</title>
+
+                                        <g id="🔍-System-Icons" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
+                                            <g id="ic_fluent_comment_add_24_regular" fill="#212121" fillRule="nonzero">
+                                                <path d="M12.0222817,2.99927567 C11.7253991,3.46285541 11.4857535,3.96661073 11.3133148,4.50057151 L5.25,4.5 C4.28350169,4.5 3.5,5.28350169 3.5,6.25 L3.5,14.75 C3.5,15.7164983 4.28350169,16.5 5.25,16.5 L7.49878573,16.5 L7.49985739,20.2505702 L12.5135149,16.5 L18.75,16.5 C19.7164983,16.5 20.5,15.7164983 20.5,14.75 L20.5010736,12.2672297 C21.0520148,11.9799518 21.5566422,11.6160435 22.0008195,11.1896412 L22,14.75 C22,16.5449254 20.5449254,18 18.75,18 L13.0124851,18 L7.99868152,21.7506795 C7.44585139,22.1641649 6.66249789,22.0512036 6.2490125,21.4983735 C6.08735764,21.2822409 6,21.0195912 6,20.7499063 L5.99921427,18 L5.25,18 C3.45507456,18 2,16.5449254 2,14.75 L2,6.25 C2,4.45507456 3.45507456,3 5.25,3 L12.0222817,2.99927567 Z M17.5,1 C20.5375661,1 23,3.46243388 23,6.5 C23,9.53756612 20.5375661,12 17.5,12 C14.4624339,12 12,9.53756612 12,6.5 C12,3.46243388 14.4624339,1 17.5,1 Z M17.5,2.5 L17.4101244,2.50805567 C17.2060313,2.54509963 17.0450996,2.70603131 17.0080557,2.91012437 L17,3 L16.999,6 L14,6 L13.9101244,6.00805567 C13.7060313,6.04509963 13.5450996,6.20603131 13.5080557,6.41012437 L13.5,6.5 L13.5080557,6.58987563 C13.5450996,6.79396869 13.7060313,6.95490037 13.9101244,6.99194433 L14,7 L16.999,7 L17,10 L17.0080557,10.0898756 C17.0450996,10.2939687 17.2060313,10.4549004 17.4101244,10.4919443 L17.5,10.5 L17.5898756,10.4919443 C17.7939687,10.4549004 17.9549004,10.2939687 17.9919443,10.0898756 L18,10 L17.999,7 L21,7 L21.0898756,6.99194433 C21.2939687,6.95490037 21.4549004,6.79396869 21.4919443,6.58987563 L21.5,6.5 L21.4919443,6.41012437 C21.4549004,6.20603131 21.2939687,6.04509963 21.0898756,6.00805567 L21,6 L17.999,6 L18,3 L17.9919443,2.91012437 C17.9549004,2.70603131 17.7939687,2.54509963 17.5898756,2.50805567 L17.5,2.5 Z" id="🎨-Color">
+
+                                                </path>
+                                            </g>
+                                        </g>
+                                    </svg>
+                                </div>
                             </div>
+                            <div className='flex flex-col justify-center  min-w-[450px] min-h-[450px] rounded-lg bg-slate-500 py-3'>
+                                <div className='title px-4 m-1 text-xl'>Virat the King  </div>
+                                <div className='title px-4 m-1 text-sm'>Just Now</div>
+                                <p className='title px-4 m-1 text-sm whitespace-pre-line' >Virat Kohli!
+                                    is an Indian international cricketer and the former captain of the Indian national cricket team. He is a right-handed batsman and an occasional medium-fast bowler. He currently represents Royal Challengers Bengaluru in the
+                                    India</p>
+                                <div className='title px-4 m-1 text-xl'>
+                                    <img src='https://images.indianexpress.com/2024/05/VIRAT-KOHLI-ORANGE-CAP-PTI-CROP-1.jpg' />
+                                </div>
+                                <div className='title px-6 my-4 text-sm flex gap-5 items-center' onClick={() => setlikes(!likes)}>
+                                    <svg className='cursor-pointer' xmlns="http://www.w3.org/2000/svg" stroke={likes ? "red" : "black"} fill={likes ? "red" : "#64748B"} width="24" height="24" viewBox="0 0 24 24">
+                                        <title>Like</title>
+                                        <path d="M12 4.248c-3.148-5.402-12-3.825-12 2.944 0 4.661 5.571 9.427 12 15.808 6.43-6.381 12-11.147 12-15.808 0-6.792-8.875-8.306-12-2.944z" /></svg>
+                                    <svg className='cursor-pointer' xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" width="26px" height="26" viewBox="0 0 24 24" version="1.1">
+
+                                        <title>Comment</title>
+
+                                        <g id="🔍-System-Icons" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
+                                            <g id="ic_fluent_comment_add_24_regular" fill="#212121" fillRule="nonzero">
+                                                <path d="M12.0222817,2.99927567 C11.7253991,3.46285541 11.4857535,3.96661073 11.3133148,4.50057151 L5.25,4.5 C4.28350169,4.5 3.5,5.28350169 3.5,6.25 L3.5,14.75 C3.5,15.7164983 4.28350169,16.5 5.25,16.5 L7.49878573,16.5 L7.49985739,20.2505702 L12.5135149,16.5 L18.75,16.5 C19.7164983,16.5 20.5,15.7164983 20.5,14.75 L20.5010736,12.2672297 C21.0520148,11.9799518 21.5566422,11.6160435 22.0008195,11.1896412 L22,14.75 C22,16.5449254 20.5449254,18 18.75,18 L13.0124851,18 L7.99868152,21.7506795 C7.44585139,22.1641649 6.66249789,22.0512036 6.2490125,21.4983735 C6.08735764,21.2822409 6,21.0195912 6,20.7499063 L5.99921427,18 L5.25,18 C3.45507456,18 2,16.5449254 2,14.75 L2,6.25 C2,4.45507456 3.45507456,3 5.25,3 L12.0222817,2.99927567 Z M17.5,1 C20.5375661,1 23,3.46243388 23,6.5 C23,9.53756612 20.5375661,12 17.5,12 C14.4624339,12 12,9.53756612 12,6.5 C12,3.46243388 14.4624339,1 17.5,1 Z M17.5,2.5 L17.4101244,2.50805567 C17.2060313,2.54509963 17.0450996,2.70603131 17.0080557,2.91012437 L17,3 L16.999,6 L14,6 L13.9101244,6.00805567 C13.7060313,6.04509963 13.5450996,6.20603131 13.5080557,6.41012437 L13.5,6.5 L13.5080557,6.58987563 C13.5450996,6.79396869 13.7060313,6.95490037 13.9101244,6.99194433 L14,7 L16.999,7 L17,10 L17.0080557,10.0898756 C17.0450996,10.2939687 17.2060313,10.4549004 17.4101244,10.4919443 L17.5,10.5 L17.5898756,10.4919443 C17.7939687,10.4549004 17.9549004,10.2939687 17.9919443,10.0898756 L18,10 L17.999,7 L21,7 L21.0898756,6.99194433 C21.2939687,6.95490037 21.4549004,6.79396869 21.4919443,6.58987563 L21.5,6.5 L21.4919443,6.41012437 C21.4549004,6.20603131 21.2939687,6.04509963 21.0898756,6.00805567 L21,6 L17.999,6 L18,3 L17.9919443,2.91012437 C17.9549004,2.70603131 17.7939687,2.54509963 17.5898756,2.50805567 L17.5,2.5 Z" id="🎨-Color">
+
+                                                </path>
+                                            </g>
+                                        </g>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div className='flex flex-col justify-center  min-w-[450px] min-h-[450px] rounded-lg bg-slate-500 py-3'>
+                                <div className='title px-4 m-1 text-xl'>Virat the King  </div>
+                                <div className='title px-4 m-1 text-sm'>Just Now</div>
+                                <p className='title px-4 m-1 text-sm whitespace-pre-line' >Virat Kohli!
+                                    is an Indian international cricketer and the former captain of the Indian national cricket team. He is a right-handed batsman and an occasional medium-fast bowler. He currently represents Royal Challengers Bengaluru in the
+                                    India</p>
+                                <div className='title px-4 m-1 text-xl'>
+                                    <img src='https://images.indianexpress.com/2024/05/VIRAT-KOHLI-ORANGE-CAP-PTI-CROP-1.jpg' />
+                                </div>
+                                <div className='title px-6 my-4 text-sm flex gap-5 items-center' onClick={() => setlikes(!likes)}>
+                                    <svg className='cursor-pointer' xmlns="http://www.w3.org/2000/svg" stroke={likes ? "red" : "black"} fill={likes ? "red" : "#64748B"} width="24" height="24" viewBox="0 0 24 24">
+                                        <title>Like</title>
+                                        <path d="M12 4.248c-3.148-5.402-12-3.825-12 2.944 0 4.661 5.571 9.427 12 15.808 6.43-6.381 12-11.147 12-15.808 0-6.792-8.875-8.306-12-2.944z" /></svg>
+                                    <svg className='cursor-pointer' xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" width="26px" height="26" viewBox="0 0 24 24" version="1.1">
+
+                                        <title>Comment</title>
+
+                                        <g id="🔍-System-Icons" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
+                                            <g id="ic_fluent_comment_add_24_regular" fill="#212121" fillRule="nonzero">
+                                                <path d="M12.0222817,2.99927567 C11.7253991,3.46285541 11.4857535,3.96661073 11.3133148,4.50057151 L5.25,4.5 C4.28350169,4.5 3.5,5.28350169 3.5,6.25 L3.5,14.75 C3.5,15.7164983 4.28350169,16.5 5.25,16.5 L7.49878573,16.5 L7.49985739,20.2505702 L12.5135149,16.5 L18.75,16.5 C19.7164983,16.5 20.5,15.7164983 20.5,14.75 L20.5010736,12.2672297 C21.0520148,11.9799518 21.5566422,11.6160435 22.0008195,11.1896412 L22,14.75 C22,16.5449254 20.5449254,18 18.75,18 L13.0124851,18 L7.99868152,21.7506795 C7.44585139,22.1641649 6.66249789,22.0512036 6.2490125,21.4983735 C6.08735764,21.2822409 6,21.0195912 6,20.7499063 L5.99921427,18 L5.25,18 C3.45507456,18 2,16.5449254 2,14.75 L2,6.25 C2,4.45507456 3.45507456,3 5.25,3 L12.0222817,2.99927567 Z M17.5,1 C20.5375661,1 23,3.46243388 23,6.5 C23,9.53756612 20.5375661,12 17.5,12 C14.4624339,12 12,9.53756612 12,6.5 C12,3.46243388 14.4624339,1 17.5,1 Z M17.5,2.5 L17.4101244,2.50805567 C17.2060313,2.54509963 17.0450996,2.70603131 17.0080557,2.91012437 L17,3 L16.999,6 L14,6 L13.9101244,6.00805567 C13.7060313,6.04509963 13.5450996,6.20603131 13.5080557,6.41012437 L13.5,6.5 L13.5080557,6.58987563 C13.5450996,6.79396869 13.7060313,6.95490037 13.9101244,6.99194433 L14,7 L16.999,7 L17,10 L17.0080557,10.0898756 C17.0450996,10.2939687 17.2060313,10.4549004 17.4101244,10.4919443 L17.5,10.5 L17.5898756,10.4919443 C17.7939687,10.4549004 17.9549004,10.2939687 17.9919443,10.0898756 L18,10 L17.999,7 L21,7 L21.0898756,6.99194433 C21.2939687,6.95490037 21.4549004,6.79396869 21.4919443,6.58987563 L21.5,6.5 L21.4919443,6.41012437 C21.4549004,6.20603131 21.2939687,6.04509963 21.0898756,6.00805567 L21,6 L17.999,6 L18,3 L17.9919443,2.91012437 C17.9549004,2.70603131 17.7939687,2.54509963 17.5898756,2.50805567 L17.5,2.5 Z" id="🎨-Color">
+
+                                                </path>
+                                            </g>
+                                        </g>
+                                    </svg>
+                                </div>
+                            </div>
+
+
                         </div>
 
                     </div>

@@ -9,7 +9,7 @@ import User from '@/models/User';
 import Payment from '@/models/Payment';
 import connectDB from '@/db/connectDb';
 export const authoptions = NextAuth({
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: "fbfiUEhf9Iw4cV9wahDynCTSlsY+YumZrtMT8rD/9+k=",
   providers: [
     
     // OAuth authentication providers...

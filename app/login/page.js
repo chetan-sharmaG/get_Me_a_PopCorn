@@ -14,7 +14,6 @@ const Login = () => {
             }
         else{
             // console.log(session.user.firstTimeLogin)
-            
             router.push(`/${session.user.pageName}`)
         }
     },[session,status])

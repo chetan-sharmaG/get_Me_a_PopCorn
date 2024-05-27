@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SessionWrapper from "@/components/SessionWrapper";
 const inter = Inter({ subsets: ["latin"] });
+import Script from "next/script";
 
 export const metadata = {
   title: "Get Me A PopCorn - Fund your Projects",
@@ -24,7 +25,7 @@ export default function RootLayout({ children }) {
           </div>
           <Footer />
 
-          <script src="https://cdn.lordicon.com/lordicon.js"></script>
+          <Script src="https://cdn.lordicon.com/lordicon.js"></Script>
         </SessionWrapper>
       </body>
     </html>

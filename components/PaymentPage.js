@@ -114,6 +114,40 @@ const PaymentPage = ({ username }) => {
         }
     }, [status])
 
+    useEffect(() => {
+        if (uploadComplete) {
+            const updateUserData = async () => {
+                console.log(form);
+                const a = await updatePageDetails(currentUser.email, form);
+                if (a) {
+                    toast('Page Details Updated!', {
+                        position: "top-right",
+                        autoClose: 3000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: false,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "dark"
+                    });
+                } else {
+                    // Handle the failure case
+                    toast('Failed to update Page Details', {
+                        position: "top-right",
+                        autoClose: 3000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: false,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "dark"
+                    });
+                }
+            };
+            updateUserData();
+        }
+    }, [uploadComplete, form]);
+    
     const handleChange = (e) => {
 
         setpaymentform({ ...paymentform, [e.target.name]: e.target.value })
@@ -214,39 +248,7 @@ const PaymentPage = ({ username }) => {
 
         setUploadComplete(true);
     }
-    useEffect(() => {
-        if (uploadComplete) {
-            const updateUserData = async () => {
-                console.log(form);
-                const a = await updatePageDetails(currentUser.email, form);
-                if (a) {
-                    toast('Page Details Updated!', {
-                        position: "top-right",
-                        autoClose: 3000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: false,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "dark"
-                    });
-                } else {
-                    // Handle the failure case
-                    toast('Failed to update Page Details', {
-                        position: "top-right",
-                        autoClose: 3000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: false,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "dark"
-                    });
-                }
-            };
-            updateUserData();
-        }
-    }, [uploadComplete, form]);
+    
 
     const uploadData = async () => {
         setUploadComplete(false);

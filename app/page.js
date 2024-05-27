@@ -5,7 +5,7 @@ export default function Home() {
     <>
       {/* <div className="absolute z-[0] bottom-0 left-0 right-0 top-0 "></div>    */}
       <div className="flex flex-col justify-center text-white items-center h-[44vh] gap-4">
-        <div className="flex items-center font-bold text-5xl" >Buy Me A PopCorn <img src="/popcorn.gif" width={50}></img></div>
+        <div className="flex items-center font-bold text-5xl" >Buy Me A PopCorn <Image src="/popcorn.gif" width={50} height={50}></Image></div>
         <p>
           A Crowdfunding Platform for creators. Get Funded by your fans and followers.
         </p>
@@ -42,7 +42,7 @@ export default function Home() {
             <p className="text-center">Your fans are available for you to help you</p>
           </div>
           <div className="item space-y-2 flex flex-col items-center justify-center">
-          <img src="/consult.gif" width={50}></img>
+          <Image src="/consult.gif" width={50} height={50}></Image>
             <p>Fund Yourseldf</p>
             <p className="text-center">Your fans are available for you to help you</p>
           </div>

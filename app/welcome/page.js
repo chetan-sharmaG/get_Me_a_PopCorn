@@ -1,5 +1,6 @@
 "use client"
 import React from 'react'
+import Image from 'next/image'
 import { useRef, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSession, signIn, signOut } from "next-auth/react"

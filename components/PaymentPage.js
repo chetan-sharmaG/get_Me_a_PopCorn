@@ -11,6 +11,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useRouter } from 'next/navigation'
 import { createPost } from '@/actions/useractions'
+import Image from 'next/image'
+
 
 
 
@@ -147,7 +149,7 @@ const PaymentPage = ({ username }) => {
             updateUserData();
         }
     }, [uploadComplete, form]);
-    
+
     const handleChange = (e) => {
 
         setpaymentform({ ...paymentform, [e.target.name]: e.target.value })

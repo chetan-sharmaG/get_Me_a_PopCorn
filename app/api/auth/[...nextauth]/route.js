@@ -9,6 +9,7 @@ import User from '@/models/User';
 import Payment from '@/models/Payment';
 import connectDB from '@/db/connectDb';
 export const authoptions = NextAuth({
+  
   providers: [
     // OAuth authentication providers...
     // AppleProvider({
@@ -39,8 +40,7 @@ export const authoptions = NextAuth({
       if (account.provider == "github") {
         //connect to db
         await connectDB()
-        // const client = await mongoose.connect("mongodb://localhost:27017/popcorn");
-        //Check if the user exists
+        
         const currentUser = await User.findOne({ email: user.email })
 
 
@@ -92,7 +92,8 @@ export const authoptions = NextAuth({
       session.user.name = dbUser.name;
       return session
     },
-  }
+  },
+  secret: process.env.NEXTAUTH_SECRET
 
 })
 

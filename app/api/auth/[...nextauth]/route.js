@@ -8,8 +8,10 @@ import mongoose from 'mongoose';
 import User from '@/models/User';
 import Payment from '@/models/Payment';
 import connectDB from '@/db/connectDb';
+
+console.log("SECRET="+process.env.NEXTAUTH_SECRET)
 export const authoptions = NextAuth({
-  secret: "fbfiUEhf9Iw4cV9wahDynCTSlsY+YumZrtMT8rD/9+k=",
+  secret: process.env.NEXTAUTH_SECRETL,
   providers: [
     
     // OAuth authentication providers...

@@ -9,16 +9,16 @@ import User from '@/models/User';
 import Payment from '@/models/Payment';
 import connectDB from '@/db/connectDb';
 
-console.warn("SECRET="+process.env.NEXTAUTH_SECRET)
-console.warn("GITHUB ID ="+process.env.GITHUB_ID)
-console.warn("GITHUB SECRET="+process.env.GITHUB_SECRET)
-console.warn("GOOGLE ID="+process.env.GOOGLE_ID)
-console.warn("GOOGLE SECRET="+process.env.GOOGLE_SECRET)
+console.warn("SECRET=" + process.env.NEXTAUTH_SECRET)
+console.warn("GITHUB ID =" + process.env.GITHUB_ID)
+console.warn("GITHUB SECRET=" + process.env.GITHUB_SECRET)
+console.warn("GOOGLE ID=" + process.env.GOOGLE_ID)
+console.warn("GOOGLE SECRET=" + process.env.GOOGLE_SECRET)
 
 export const authoptions = NextAuth({
-  secret: process.env.NEXTAUTH_SECRET,
+  
   providers: [
-    
+
     // OAuth authentication providers...
     // AppleProvider({
     //   clientId: process.env.APPLE_ID,
@@ -43,12 +43,13 @@ export const authoptions = NextAuth({
     // }),
 
   ],
+  secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async signIn({ user, account, profile, email, credentials }) {
       if (account.provider == "github") {
         //connect to db
         await connectDB()
-        
+
         const currentUser = await User.findOne({ email: user.email })
 
 
@@ -66,7 +67,7 @@ export const authoptions = NextAuth({
       }
       else if (account.provider === 'google') {
         await connectDB()
-        // const client = await mongoose.connect("mongodb://localhost:27017/popcorn");
+       
         //Check if the user exists
         const currentUser = await User.findOne({ email: user.email })
         console.log("user=" + user.name)
@@ -101,7 +102,7 @@ export const authoptions = NextAuth({
       return session
     },
   },
-  
+
 
 })
 

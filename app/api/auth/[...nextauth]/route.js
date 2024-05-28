@@ -15,6 +15,7 @@ console.warn("GITHUB SECRET=" + process.env.GITHUB_SECRET)
 console.warn("GOOGLE ID=" + process.env.GOOGLE_ID)
 console.warn("GOOGLE SECRET=" + process.env.GOOGLE_SECRET)
 
+
 export const authoptions = NextAuth({
   
   providers: [

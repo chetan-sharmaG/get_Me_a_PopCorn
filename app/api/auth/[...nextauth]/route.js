@@ -9,7 +9,12 @@ import User from '@/models/User';
 import Payment from '@/models/Payment';
 import connectDB from '@/db/connectDb';
 
-console.log("SECRET="+process.env.NEXTAUTH_SECRET)
+console.warn("SECRET="+process.env.NEXTAUTH_SECRET)
+console.warn("GITHUB ID ="+process.env.GITHUB_ID)
+console.warn("GITHUB SECRET="+process.env.GITHUB_SECRET)
+console.warn("GOOGLE ID="+process.env.GOOGLE_ID)
+console.warn("GOOGLE SECRET="+process.env.GOOGLE_SECRET)
+
 export const authoptions = NextAuth({
   secret: process.env.NEXTAUTH_SECRET,
   providers: [

@@ -43,7 +43,7 @@ export const authoptions = NextAuth({
     // }),
 
   ],
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: "f6bfe64f36c73f480d5851831d684d2e",
   callbacks: {
     async signIn({ user, account, profile, email, credentials }) {
       if (account.provider == "github") {
@@ -105,5 +105,8 @@ export const authoptions = NextAuth({
 
 
 })
+// const authHandler: NextApiHandler = (req, res) => NextAuth(req, res, authoptions);
+
+// export default authHandler;
 
 export { authoptions as GET, authoptions as POST }

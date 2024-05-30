@@ -9,6 +9,8 @@ import { PageCreation } from '@/actions/useractions'
 import { RazorPayDetails } from '@/actions/useractions'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { NativeBuffer } from 'mongoose'
+import Navbar from '@/components/Navbar'
 
 const Welcome = () => {
 
@@ -194,6 +196,7 @@ const Welcome = () => {
         transition="Bounce"
 />
       {/* Same as */}
+      <Navbar/>
       <ToastContainer />
       <div className='h-screen w-full md:w-screen flex items-center justify-center '>
         {currentPop === 0 &&
@@ -206,7 +209,7 @@ const Welcome = () => {
               <div className='w-[85%]'>
                 <ul className='flex flex-col gap-2'>
                   <li className='flex gap-3 items-center'>
-                    <Image width="30" height="30" src="https://Image.icons8.com/color/40/sparkling.png" alt="sparkling" />
+                    <Image width={30} height={30} src="https://Image.icons8.com/color/40/sparkling.png" alt="sparkling" />
                     Start your own Patreon in just a few steps.</li>
                   <li className='flex gap-3 items-center'>
                     <Image width="30" height="30" src="https://Image.icons8.com/color/30/conference-call--v1.png" alt="conference-call--v1" />

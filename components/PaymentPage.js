@@ -39,13 +39,14 @@ const PaymentPage = ({ username }) => {
     const coverRef = useRef()
     const saveButton = useRef()
     const [uploadComplete, setUploadComplete] = useState(false);
-
+    const postCreation = useRef()
 
     const handlePostFormChanges = (e) => {
         const { name, value } = e.target
         setpostform({ ...postform, [name]: value })
         console.log(postform)
     }
+
 
     const CreatePost = () => {
         console.log("Posting")
@@ -155,14 +156,7 @@ const PaymentPage = ({ username }) => {
         setpaymentform({ ...paymentform, [e.target.name]: e.target.value })
         console.log(paymentform)
     }
-    if (!currentUser) {
-        return <>
-            <div className='flex h-[100vh] w-[100vw] items-center flex-col justify-center '>
-                <span className='text-6xl'>404: No such user Found</span>
-                <a href='/' className='bg-orange-200 rounded-lg w-fit p-3 m-3 text-black'> &larr; Go Back To Home</a>
-            </div>
-        </>
-    }
+
     const getData = async () => {
 
         let u = await fetchUser(username)
@@ -250,7 +244,7 @@ const PaymentPage = ({ username }) => {
 
         setUploadComplete(true);
     }
-    
+
 
     const uploadData = async () => {
         setUploadComplete(false);
@@ -271,7 +265,11 @@ const PaymentPage = ({ username }) => {
         });
     }
 
-
+    const handleRadio = (e) => {
+        console.log("inside func")
+        var value = e.target.value
+        console.log(value)
+    };
 
 
 
@@ -306,8 +304,8 @@ const PaymentPage = ({ username }) => {
                             <button className='bg-gray-600  w-[100px] p-3 text-black rounded-lg '>Cancel</button>
                         </div>
 
-                        <div className={`relative group ${currentUser.coverPic ? "" : "bg-pink-400 h-[400px] w-full"}`}>
-                            {currentUser.coverPic && <img className='w-full object-fill h-[400px] relative ' ref={coverRef} src={currentUser.coverPic} />}
+                        <div className={`relative group ${currentUser.coverPic ? "" : "bg-pink-400 h-[200px] sm:h-[400px] w-full"}`}>
+                            {currentUser.coverPic && <img className='w-full object-fill h-[200px] sm:h-[400px] relative ' ref={coverRef} src={currentUser.coverPic} />}
 
                             {userDetails.email === currentUser.email &&
                                 <>
@@ -320,8 +318,8 @@ const PaymentPage = ({ username }) => {
                             }
                         </div>
                         <div className='absolute bottom-[-53px] left-[50%] translate-x-[-50%]'>
-                            <div className={`relative group ${currentUser.profilePic ? "" : "bg-orange-400 rounded-xl h-[150px] w-[150px] "}`}>
-                                {currentUser.profilePic && <img className='rounded-xl object-cover bg-white h-[150px] w-[150px]' ref={profileRef} src={currentUser.profilePic} />}
+                            <div className={`relative group ${currentUser.profilePic ? "" : "bg-orange-400 rounded-xl h-[100px] w-[100px] sm:h-[150px] sm:w-[150px] "}`}>
+                                {currentUser.profilePic && <img className='rounded-xl object-cover bg-white h-[100px] w-[100px] sm:h-[150px] sm:w-[150px]' ref={profileRef} src={currentUser.profilePic} />}
 
                                 {userDetails.email === currentUser.email &&
                                     <>
@@ -335,11 +333,14 @@ const PaymentPage = ({ username }) => {
                             </div>
                         </div>
                     </div>
-                    <div className='flex flex-col justify-center items-center my-16 gap-3 relative' >
-                        <div className='absolute top-[-50px] right-4'>
-                            <div className='flex gap-2 items-center'>
+                    <div className='flex flex-col justify-start items-center my-16 sm:gap-1 gap-1 relative' >
+                        <div className='settings absolute top-[-50px] right-4'>
+                            <div className='flex gap-2 items-center justify-center'>
 
-                                <div className='group relative' onClick={() => setdisplay(!display)}>
+                                <div className='group relative' onClick={() => {
+                                    setdisplay(!display)
+                                    router.push('#post')
+                                }}>
                                     <button
                                         title="Create Post"
                                         className="group cursor-pointer outline-none hover:rotate-90 duration-300"
@@ -350,7 +351,7 @@ const PaymentPage = ({ username }) => {
                                             width="30px"
                                             height="30px"
                                             viewBox="0 0 24 24"
-                                            className="stroke-zinc-400 fill-none group-hover:fill-zinc-800 group-active:stroke-zinc-200 group-active:fill-zinc-600 group-active:duration-0 duration-300"
+                                            className="stroke-gray-100  fill-none group-hover:fill-zinc-800 group-active:stroke-zinc-200 group-active:fill-zinc-600 group-active:duration-0 duration-300"
                                         >
                                             <path
                                                 d="M12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22Z"
@@ -401,104 +402,146 @@ const PaymentPage = ({ username }) => {
                             </div>
 
                         </div>
-                        <span className='flex gap-2 items-center'>
-                            <input type='text' name='TeamName' disabled={userDetails.email === currentUser.email ? false : true} className='bg-transparent hover:border border-white w-fit text-center' onChange={handleformChange} value={form.TeamName} />
+                        <span className='teamName flex gap-2 items-center'>
+                            <input type='text' name='TeamName' disabled={userDetails.email === currentUser.email ? false : true} className={`bg-transparent  ${userDetails.email === currentUser.email ? "hover:border hover:rounded-xl" : ""} w-fit text-center text-white text-xl`} onChange={handleformChange} value={form.TeamName} />
                         </span>
-                        <div className='text-slate-400'><input type='text' disabled={userDetails.email === currentUser.email ? false : true} name='description' className={`bg-transparent ${userDetails.email === currentUser.email ? "hover:border border-white" : ""} w-fit text-center`} onChange={handleformChange} value={form.description} /></div>
-                        <div onClick={() => copyToClipboard()} className='flex gap-1 items-center cursor-pointer'>
+                        <div className='text-slate-400 w-[300px]'><textarea type='text' rows={2} disabled={userDetails.email === currentUser.email ? false : true} name='description' className={`textarea resize-none bg-transparent ${userDetails.email === currentUser.email ? "hover:border border-white hover:rounded-xl" : ""} w-full text-center`} onChange={handleformChange} value={form.description} /></div>
+                        <div onClick={() => copyToClipboard()} className='flex text-gray-300 gap-1 items-center cursor-pointer'>
                             <img width="15" height="15" className='invert-[1]' src="https://img.icons8.com/material-rounded/24/link--v1.png" alt="link--v1" />
                             <span className='text-xs'>Popcorn/{currentUser.pageName}</span>
                         </div>
-                        {/* <div className='text-slate-400 '>0 members 0 posts</div> */}
+                        <div className='text-slate-400 self-center'>1 members 3 posts</div>
                         {userDetails.email !== currentUser.email && <button className="bg-rose-950 text-rose-400 border border-rose-400 border-b-4 font-medium overflow-hidden relative px-4 py-2 rounded-md hover:brightness-150 hover:border-t-4 hover:border-b active:opacity-75 outline-none duration-300 group">
                             <span className="bg-rose-400 shadow-rose-400 absolute -top-[150%] left-0 inline-flex w-80 h-[5px] rounded-md opacity-50 group-hover:top-[150%] duration-500 shadow-[0_0_10px_10px_rgba(0,0,0,0.3)]"></span>
                             Join now
                         </button>}
                     </div>
                     <div className='w-[100vw] h-[1px] opacity-45 bg-white mb-5'></div>
-                    {display && 
-                    <>
-                     <div className="create_posts w-[80%] mx-auto flex flex-col items-center justify-center gap-5 my-10">
-                        <span className='text-2xl my-2 self-start'>Create a Post</span>
-                        <div className='w-[50%] h-[400px] rounded-xl  flex-col'>
-                            <input
-                                placeholder="Title" name='postTitle' onChange={handlePostFormChanges}
-                                className="bg-[#292929] my-3 w-full border-2 border-[#3e3e3e] rounded-lg text-white px-6 py-3 text-base hover:border-[#fff]  transition"
-                                type="text"
-                            />
-                            <textarea
-                                name='postDescription'
-                                onChange={handlePostFormChanges}
-                                placeholder="Description" rows={5}
-                                className="bg-[#292929] w-full my-3 border-2 border-[#3e3e3e] rounded-lg text-white px-6 py-3 text-base hover:border-[#fff]  transition"
-                                type="text"
-                            />
-                            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white" htmlFor="file_input">Upload file</label>
-                            <input className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" aria-describedby="file_input_help" id="file_input" type="file" />
-                            <p className="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">Video,Image and Audio Only</p>
-                            <div className="w-full mt-5 flex items-center justify-center cursor-pointer" >
-                                <div
-                                    className="relative inline-flex items-center justify-start py-3 pl-4 pr-12 overflow-hidden font-semibold shadow text-indigo-600 transition-all duration-150 ease-in-out rounded hover:pl-10 hover:pr-6 bg-gray-50 dark:bg-gray-700 dark:text-white dark:hover:text-gray-200 dark:shadow-none group"
-                                >
-                                    <span
-                                        className="absolute bottom-0 left-0 w-full h-1 transition-all duration-150 ease-in-out bg-indigo-600 group-hover:h-full"
-                                    ></span>
-                                    <span
-                                        className="absolute right-0 pr-4 duration-200 ease-out group-hover:translate-x-12"
-                                    >
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 24 24"
-                                            stroke="currentColor"
-                                            fill="none"
-                                            className="w-5 h-5 text-green-400"
+                    {display &&
+                        <>
+                            <div className="create_posts w-[80%] mx-auto flex flex-col items-center justify-center gap-0 my-10">
+                                <span id='post' className='text-2xl my-2 self-start' ref={postCreation}>Create a Post</span>
+                                <div className='flex w-full justify-around h-fit'>
+                                    <div className='basis-[50%]   rounded-xl flex flex-col'>
+                                        <input
+                                            placeholder="Title*" name='postTitle' onChange={handlePostFormChanges}
+                                            className="bg-slate-800 my-3 w-full border-2 border-[#3e3e3e] rounded-lg text-white px-6 py-3 text-base hover:border-[#fff]  transition"
+                                            type="text" required
+                                        />
+                                        <textarea
+                                            name='postDescription'
+                                            onChange={handlePostFormChanges}
+                                            placeholder="Description*" rows={5}
+                                            className="bg-slate-800 w-full my-3 border-2 border-[#3e3e3e] rounded-lg text-white px-6 py-3 text-base hover:border-[#fff]  transition"
+                                            type="text" required
+                                        />
+                                        <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white" htmlFor="file_input">Upload file</label>
+                                        <input className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" aria-describedby="file_input_help" id="file_input" type="file" />
+                                        <p className="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">Video,Image and Audio Only</p>
+
+
+                                    </div>
+                                    <div className='basis-[40%] h-[400px] rounded-xl flex  gap-3 flex-col'>
+                                        <input
+                                            placeholder="Redirect URL ->https://example.com" pattern="https://.*" name='postRedirectURL' onChange={handlePostFormChanges}
+                                            className="bg-slate-800 my-3 w-full border-2 border-[#3e3e3e] rounded-lg text-white px-3 py-3 text-base hover:border-[#fff]  transition"
+                                            type="url"
+                                        />
+                                        <label >Visibility</label>
+                                        <div
+                                            className="flex space-x-2 border-[3px] border-purple-400 rounded-xl select-none"
                                         >
-                                            <path
-                                                d="M14 5l7 7m0 0l-7 7m7-7H3"
-                                                strokeWidth="2"
-                                                strokeLinejoin="round"
-                                                strokeLinecap="round"
-                                            ></path>
-                                        </svg>
-                                    </span>
-                                    <span
-                                        className="absolute left-0 pl-2.5 -translate-x-12 group-hover:translate-x-0 ease-out duration-200"
+
+                                            <label
+                                                className="radio flex flex-grow items-center justify-center rounded-lg p-1 cursor-pointer"
+                                            >
+                                                <input type="radio" onChange={handlePostFormChanges} name="postVisibility" value="public" className="peer hidden" />
+                                                <span
+                                                    className="tracking-widest peer-checked:bg-gradient-to-r peer-checked:from-[blueviolet] peer-checked:to-[violet] peer-checked:text-white text-white p-2 rounded-lg transition duration-150 ease-in-out"
+                                                >Public</span
+                                                >
+                                            </label>
+
+                                            <label
+                                                className="radio flex flex-grow items-center justify-center rounded-lg p-1 cursor-pointer"
+                                            >
+                                                <input type="radio" name="postVisibility" onChange={handlePostFormChanges} value="team" className="peer hidden" />
+                                                <span
+                                                    className="tracking-widest peer-checked:bg-gradient-to-r peer-checked:from-[blueviolet] peer-checked:to-[violet] peer-checked:text-white text-white p-2 rounded-lg transition duration-150 ease-in-out"
+                                                >Only Team</span
+                                                >
+                                            </label>
+                                        </div>
+
+
+
+
+
+                                    </div>
+
+                                </div>
+                                <div className="w-full relative bottom-[40px] flex items-center justify-center cursor-pointer" >
+                                    <div
+                                        className="relative inline-flex items-center justify-start py-3 pl-4 pr-12 overflow-hidden font-semibold shadow text-indigo-600 transition-all duration-150 ease-in-out rounded hover:pl-10 hover:pr-6 bg-gray-50 dark:bg-gray-700 dark:text-white dark:hover:text-gray-200 dark:shadow-none group"
                                     >
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 24 24"
-                                            stroke="currentColor"
-                                            fill="none"
-                                            className="w-5 h-5 text-green-400"
+                                        <span
+                                            className="absolute bottom-0 left-0 w-full h-1 transition-all duration-150 ease-in-out bg-indigo-600 group-hover:h-full"
+                                        ></span>
+                                        <span
+                                            className="absolute right-0 pr-4 duration-200 ease-out group-hover:translate-x-12"
                                         >
-                                            <path
-                                                d="M14 5l7 7m0 0l-7 7m7-7H3"
-                                                strokeWidth="2"
-                                                strokeLinejoin="round"
-                                                strokeLinecap="round"
-                                            ></path>
-                                        </svg>
-                                    </span>
-                                    <span onClick={CreatePost}
-                                        className="relative w-full text-left transition-colors duration-200 ease-in-out group-hover:text-white dark:group-hover:text-gray-200"
-                                    >Post Now!!</span
-                                    >
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                                fill="none"
+                                                className="w-5 h-5 text-green-400"
+                                            >
+                                                <path
+                                                    d="M14 5l7 7m0 0l-7 7m7-7H3"
+                                                    strokeWidth="2"
+                                                    strokeLinejoin="round"
+                                                    strokeLinecap="round"
+                                                ></path>
+                                            </svg>
+                                        </span>
+                                        <span
+                                            className="absolute left-0 pl-2.5 -translate-x-12 group-hover:translate-x-0 ease-out duration-200"
+                                        >
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                                fill="none"
+                                                className="w-5 h-5 text-green-400"
+                                            >
+                                                <path
+                                                    d="M14 5l7 7m0 0l-7 7m7-7H3"
+                                                    strokeWidth="2"
+                                                    strokeLinejoin="round"
+                                                    strokeLinecap="round"
+                                                ></path>
+                                            </svg>
+                                        </span>
+                                        <span onClick={CreatePost}
+                                            className="relative w-full text-left transition-colors duration-200 ease-in-out group-hover:text-white dark:group-hover:text-gray-200"
+                                        >Post Now!!</span
+                                        >
+                                    </div>
                                 </div>
                             </div>
+                        </>}
+                    <div className="posts w-[90%] sm:w-[80%] mx-auto flex flex-col gap-5 ">
+                        {userDetails.email === currentUser.email ? <span className='text-2xl text-yellow-300 my-2'>Your Recent Posts</span> : <span className='text-2xl my-2'>Recent Posts By {currentUser.TeamName}</span>}
 
-                        </div>
-
-                    </div>
-                    </>}
-                    <div className="posts w-[80%] mx-auto flex flex-col gap-5 ">
-                        {userDetails.email === currentUser.email ? <span className='text-2xl my-2'>Your Recent Posts</span> : <span className='text-2xl my-2'>Recent Posts By {currentUser.TeamName}</span>}
-
-                        <div id='style-4' className="flex gap-5 overflow-x-scroll ">
-                            <div className='flex flex-col justify-center  min-w-[450px] min-h-[450px] rounded-lg bg-slate-500 py-3'>
-                                <div className='title px-4 m-1 text-xl'>Virat the King  </div>
-                                <div className='title px-4 m-1 text-sm'>Just Now</div>
-                                <p className='title px-4 m-1 text-sm whitespace-pre-line' >Virat Kohli!
+                        <div id='style-4' className="flex gap-5 overflow-x-auto ">
+                            <div className='flex flex-col sm:justify-center lg:justify-center min-w-[clamp(280px,290px,60vw)] max-w-[90vw] md:max-w-[500px] h-fit mb-2    sm:min-w-[350px] sm:min-h-[350px]  lg:min-w-[450px] lg:min-h-[450px] rounded-lg bg-slate-400 py-3'>
+                                <div className='title px-4 m-1 font-bold text-xl'>Virat the King  </div>
+                                <div className='title px-4 m-1 flex gap-1 text-sm'><img width="18" height="1" src="https://img.icons8.com/ios-filled/20/time.png" alt="time" />Just Now</div>
+                                <p className='title px-4 m-1 text-lg w-full whitespace-pre-wrap' >
+                                    Virat Kohli!
                                     is an Indian international cricketer and the former captain of the Indian national cricket team. He is a right-handed batsman and an occasional medium-fast bowler. He currently represents Royal Challengers Bengaluru in the
+
                                     India</p>
                                 <div className='title px-4 m-1 text-xl'>
                                     <img src='https://images.indianexpress.com/2024/05/VIRAT-KOHLI-ORANGE-CAP-PTI-CROP-1.jpg' />
@@ -521,97 +564,17 @@ const PaymentPage = ({ username }) => {
                                     </svg>
                                 </div>
                             </div>
-                            <div className='flex flex-col justify-center  min-w-[450px] min-h-[450px] rounded-lg bg-slate-500 py-3'>
-                                <div className='title px-4 m-1 text-xl'>Virat the King  </div>
-                                <div className='title px-4 m-1 text-sm'>Just Now</div>
-                                <p className='title px-4 m-1 text-sm whitespace-pre-line' >Virat Kohli!
-                                    is an Indian international cricketer and the former captain of the Indian national cricket team. He is a right-handed batsman and an occasional medium-fast bowler. He currently represents Royal Challengers Bengaluru in the
-                                    India</p>
-                                <div className='title px-4 m-1 text-xl'>
-                                    <img src='https://images.indianexpress.com/2024/05/VIRAT-KOHLI-ORANGE-CAP-PTI-CROP-1.jpg' />
-                                </div>
-                                <div className='title px-6 my-4 text-sm flex gap-5 items-center' onClick={() => setlikes(!likes)}>
-                                    <svg className='cursor-pointer' xmlns="http://www.w3.org/2000/svg" stroke={likes ? "red" : "black"} fill={likes ? "red" : "#64748B"} width="24" height="24" viewBox="0 0 24 24">
-                                        <title>Like</title>
-                                        <path d="M12 4.248c-3.148-5.402-12-3.825-12 2.944 0 4.661 5.571 9.427 12 15.808 6.43-6.381 12-11.147 12-15.808 0-6.792-8.875-8.306-12-2.944z" /></svg>
-                                    <svg className='cursor-pointer' xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" width="26px" height="26" viewBox="0 0 24 24" version="1.1">
 
-                                        <title>Comment</title>
-
-                                        <g id="🔍-System-Icons" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
-                                            <g id="ic_fluent_comment_add_24_regular" fill="#212121" fillRule="nonzero">
-                                                <path d="M12.0222817,2.99927567 C11.7253991,3.46285541 11.4857535,3.96661073 11.3133148,4.50057151 L5.25,4.5 C4.28350169,4.5 3.5,5.28350169 3.5,6.25 L3.5,14.75 C3.5,15.7164983 4.28350169,16.5 5.25,16.5 L7.49878573,16.5 L7.49985739,20.2505702 L12.5135149,16.5 L18.75,16.5 C19.7164983,16.5 20.5,15.7164983 20.5,14.75 L20.5010736,12.2672297 C21.0520148,11.9799518 21.5566422,11.6160435 22.0008195,11.1896412 L22,14.75 C22,16.5449254 20.5449254,18 18.75,18 L13.0124851,18 L7.99868152,21.7506795 C7.44585139,22.1641649 6.66249789,22.0512036 6.2490125,21.4983735 C6.08735764,21.2822409 6,21.0195912 6,20.7499063 L5.99921427,18 L5.25,18 C3.45507456,18 2,16.5449254 2,14.75 L2,6.25 C2,4.45507456 3.45507456,3 5.25,3 L12.0222817,2.99927567 Z M17.5,1 C20.5375661,1 23,3.46243388 23,6.5 C23,9.53756612 20.5375661,12 17.5,12 C14.4624339,12 12,9.53756612 12,6.5 C12,3.46243388 14.4624339,1 17.5,1 Z M17.5,2.5 L17.4101244,2.50805567 C17.2060313,2.54509963 17.0450996,2.70603131 17.0080557,2.91012437 L17,3 L16.999,6 L14,6 L13.9101244,6.00805567 C13.7060313,6.04509963 13.5450996,6.20603131 13.5080557,6.41012437 L13.5,6.5 L13.5080557,6.58987563 C13.5450996,6.79396869 13.7060313,6.95490037 13.9101244,6.99194433 L14,7 L16.999,7 L17,10 L17.0080557,10.0898756 C17.0450996,10.2939687 17.2060313,10.4549004 17.4101244,10.4919443 L17.5,10.5 L17.5898756,10.4919443 C17.7939687,10.4549004 17.9549004,10.2939687 17.9919443,10.0898756 L18,10 L17.999,7 L21,7 L21.0898756,6.99194433 C21.2939687,6.95490037 21.4549004,6.79396869 21.4919443,6.58987563 L21.5,6.5 L21.4919443,6.41012437 C21.4549004,6.20603131 21.2939687,6.04509963 21.0898756,6.00805567 L21,6 L17.999,6 L18,3 L17.9919443,2.91012437 C17.9549004,2.70603131 17.7939687,2.54509963 17.5898756,2.50805567 L17.5,2.5 Z" id="🎨-Color">
-
-                                                </path>
-                                            </g>
-                                        </g>
-                                    </svg>
-                                </div>
-                            </div>
-                            <div className='flex flex-col justify-center  min-w-[450px] min-h-[450px] rounded-lg bg-slate-500 py-3'>
-                                <div className='title px-4 m-1 text-xl'>Virat the King  </div>
-                                <div className='title px-4 m-1 text-sm'>Just Now</div>
-                                <p className='title px-4 m-1 text-sm whitespace-pre-line' >Virat Kohli!
-                                    is an Indian international cricketer and the former captain of the Indian national cricket team. He is a right-handed batsman and an occasional medium-fast bowler. He currently represents Royal Challengers Bengaluru in the
-                                    India</p>
-                                <div className='title px-4 m-1 text-xl'>
-                                    <img src='https://images.indianexpress.com/2024/05/VIRAT-KOHLI-ORANGE-CAP-PTI-CROP-1.jpg' />
-                                </div>
-                                <div className='title px-6 my-4 text-sm flex gap-5 items-center' onClick={() => setlikes(!likes)}>
-                                    <svg className='cursor-pointer' xmlns="http://www.w3.org/2000/svg" stroke={likes ? "red" : "black"} fill={likes ? "red" : "#64748B"} width="24" height="24" viewBox="0 0 24 24">
-                                        <title>Like</title>
-                                        <path d="M12 4.248c-3.148-5.402-12-3.825-12 2.944 0 4.661 5.571 9.427 12 15.808 6.43-6.381 12-11.147 12-15.808 0-6.792-8.875-8.306-12-2.944z" /></svg>
-                                    <svg className='cursor-pointer' xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" width="26px" height="26" viewBox="0 0 24 24" version="1.1">
-
-                                        <title>Comment</title>
-
-                                        <g id="🔍-System-Icons" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
-                                            <g id="ic_fluent_comment_add_24_regular" fill="#212121" fillRule="nonzero">
-                                                <path d="M12.0222817,2.99927567 C11.7253991,3.46285541 11.4857535,3.96661073 11.3133148,4.50057151 L5.25,4.5 C4.28350169,4.5 3.5,5.28350169 3.5,6.25 L3.5,14.75 C3.5,15.7164983 4.28350169,16.5 5.25,16.5 L7.49878573,16.5 L7.49985739,20.2505702 L12.5135149,16.5 L18.75,16.5 C19.7164983,16.5 20.5,15.7164983 20.5,14.75 L20.5010736,12.2672297 C21.0520148,11.9799518 21.5566422,11.6160435 22.0008195,11.1896412 L22,14.75 C22,16.5449254 20.5449254,18 18.75,18 L13.0124851,18 L7.99868152,21.7506795 C7.44585139,22.1641649 6.66249789,22.0512036 6.2490125,21.4983735 C6.08735764,21.2822409 6,21.0195912 6,20.7499063 L5.99921427,18 L5.25,18 C3.45507456,18 2,16.5449254 2,14.75 L2,6.25 C2,4.45507456 3.45507456,3 5.25,3 L12.0222817,2.99927567 Z M17.5,1 C20.5375661,1 23,3.46243388 23,6.5 C23,9.53756612 20.5375661,12 17.5,12 C14.4624339,12 12,9.53756612 12,6.5 C12,3.46243388 14.4624339,1 17.5,1 Z M17.5,2.5 L17.4101244,2.50805567 C17.2060313,2.54509963 17.0450996,2.70603131 17.0080557,2.91012437 L17,3 L16.999,6 L14,6 L13.9101244,6.00805567 C13.7060313,6.04509963 13.5450996,6.20603131 13.5080557,6.41012437 L13.5,6.5 L13.5080557,6.58987563 C13.5450996,6.79396869 13.7060313,6.95490037 13.9101244,6.99194433 L14,7 L16.999,7 L17,10 L17.0080557,10.0898756 C17.0450996,10.2939687 17.2060313,10.4549004 17.4101244,10.4919443 L17.5,10.5 L17.5898756,10.4919443 C17.7939687,10.4549004 17.9549004,10.2939687 17.9919443,10.0898756 L18,10 L17.999,7 L21,7 L21.0898756,6.99194433 C21.2939687,6.95490037 21.4549004,6.79396869 21.4919443,6.58987563 L21.5,6.5 L21.4919443,6.41012437 C21.4549004,6.20603131 21.2939687,6.04509963 21.0898756,6.00805567 L21,6 L17.999,6 L18,3 L17.9919443,2.91012437 C17.9549004,2.70603131 17.7939687,2.54509963 17.5898756,2.50805567 L17.5,2.5 Z" id="🎨-Color">
-
-                                                </path>
-                                            </g>
-                                        </g>
-                                    </svg>
-                                </div>
-                            </div>
-                            <div className='flex flex-col justify-center  min-w-[450px] min-h-[450px] rounded-lg bg-slate-500 py-3'>
-                                <div className='title px-4 m-1 text-xl'>Virat the King  </div>
-                                <div className='title px-4 m-1 text-sm'>Just Now</div>
-                                <p className='title px-4 m-1 text-sm whitespace-pre-line' >Virat Kohli!
-                                    is an Indian international cricketer and the former captain of the Indian national cricket team. He is a right-handed batsman and an occasional medium-fast bowler. He currently represents Royal Challengers Bengaluru in the
-                                    India</p>
-                                <div className='title px-4 m-1 text-xl'>
-                                    <img src='https://images.indianexpress.com/2024/05/VIRAT-KOHLI-ORANGE-CAP-PTI-CROP-1.jpg' />
-                                </div>
-                                <div className='title px-6 my-4 text-sm flex gap-5 items-center' onClick={() => setlikes(!likes)}>
-                                    <svg className='cursor-pointer' xmlns="http://www.w3.org/2000/svg" stroke={likes ? "red" : "black"} fill={likes ? "red" : "#64748B"} width="24" height="24" viewBox="0 0 24 24">
-                                        <title>Like</title>
-                                        <path d="M12 4.248c-3.148-5.402-12-3.825-12 2.944 0 4.661 5.571 9.427 12 15.808 6.43-6.381 12-11.147 12-15.808 0-6.792-8.875-8.306-12-2.944z" /></svg>
-                                    <svg className='cursor-pointer' xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" width="26px" height="26" viewBox="0 0 24 24" version="1.1">
-
-                                        <title>Comment</title>
-
-                                        <g id="🔍-System-Icons" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
-                                            <g id="ic_fluent_comment_add_24_regular" fill="#212121" fillRule="nonzero">
-                                                <path d="M12.0222817,2.99927567 C11.7253991,3.46285541 11.4857535,3.96661073 11.3133148,4.50057151 L5.25,4.5 C4.28350169,4.5 3.5,5.28350169 3.5,6.25 L3.5,14.75 C3.5,15.7164983 4.28350169,16.5 5.25,16.5 L7.49878573,16.5 L7.49985739,20.2505702 L12.5135149,16.5 L18.75,16.5 C19.7164983,16.5 20.5,15.7164983 20.5,14.75 L20.5010736,12.2672297 C21.0520148,11.9799518 21.5566422,11.6160435 22.0008195,11.1896412 L22,14.75 C22,16.5449254 20.5449254,18 18.75,18 L13.0124851,18 L7.99868152,21.7506795 C7.44585139,22.1641649 6.66249789,22.0512036 6.2490125,21.4983735 C6.08735764,21.2822409 6,21.0195912 6,20.7499063 L5.99921427,18 L5.25,18 C3.45507456,18 2,16.5449254 2,14.75 L2,6.25 C2,4.45507456 3.45507456,3 5.25,3 L12.0222817,2.99927567 Z M17.5,1 C20.5375661,1 23,3.46243388 23,6.5 C23,9.53756612 20.5375661,12 17.5,12 C14.4624339,12 12,9.53756612 12,6.5 C12,3.46243388 14.4624339,1 17.5,1 Z M17.5,2.5 L17.4101244,2.50805567 C17.2060313,2.54509963 17.0450996,2.70603131 17.0080557,2.91012437 L17,3 L16.999,6 L14,6 L13.9101244,6.00805567 C13.7060313,6.04509963 13.5450996,6.20603131 13.5080557,6.41012437 L13.5,6.5 L13.5080557,6.58987563 C13.5450996,6.79396869 13.7060313,6.95490037 13.9101244,6.99194433 L14,7 L16.999,7 L17,10 L17.0080557,10.0898756 C17.0450996,10.2939687 17.2060313,10.4549004 17.4101244,10.4919443 L17.5,10.5 L17.5898756,10.4919443 C17.7939687,10.4549004 17.9549004,10.2939687 17.9919443,10.0898756 L18,10 L17.999,7 L21,7 L21.0898756,6.99194433 C21.2939687,6.95490037 21.4549004,6.79396869 21.4919443,6.58987563 L21.5,6.5 L21.4919443,6.41012437 C21.4549004,6.20603131 21.2939687,6.04509963 21.0898756,6.00805567 L21,6 L17.999,6 L18,3 L17.9919443,2.91012437 C17.9549004,2.70603131 17.7939687,2.54509963 17.5898756,2.50805567 L17.5,2.5 Z" id="🎨-Color">
-
-                                                </path>
-                                            </g>
-                                        </g>
-                                    </svg>
-                                </div>
-                            </div>
 
 
                         </div>
 
                     </div>
-                    <div className='Supporters_Box flex w-[80%] mx-auto gap-3 my-16'>
-                        <div className='supporters w-1/2 bg-slate-900  rounded-lg p-5'>
-                            <h2 className='text-2xl font-bold my-5'>Supporters</h2>
-                            <ul id='style-4' className='mx-5 h-[300px] overflow-y-auto'>
-                                {Payments.length === 0 && "No Payments Yet"}
+                    <div className='Supporters_Box flex flex-col  sm:flex-row w-[90%] sm:w-[80%] mx-auto gap-3 py-10  '>
+                        <div className={`supporters w-full  sm:w-1/2 bg-slate-900  rounded-lg p-5`}>
+                            <h2 className='text-2xl font-bold my-5 text-orange-200'>Supporters</h2>
+                            <ul id='style-4' className={`mx-5 ${Payments.length === 0 ? "h-fit " : "h-[300px]"} overflow-y-auto`}>
+                                {Payments.length === 0 && <div className='text-white '>No Payment Received Yet</div>}
                                 {Payments.map((item) => {
                                     if (item.done) {
                                         return (<>
@@ -624,8 +587,8 @@ const PaymentPage = ({ username }) => {
                                 })}
                             </ul>
                         </div>
-                        <div className='supporters_payment bg-slate-900 rounded-lg w-1/2 p-5 h-fit'>
-                            <h2 className='font-bold text-2xl my-5'>Make a Payment</h2>
+                        <div className='supporters_payment w-full  sm:w-1/2 bg-slate-900 rounded-lg  p-5 h-fit'>
+                            <h2 className='font-bold text-2xl my-5 text-orange-200'>Make a Payment</h2>
                             <div className='flex flex-col gap-2'>
                                 <input type='text' onChange={handleChange} name="name" value={paymentform.name} placeholder='Enter Name' className='w-full p-3 bg-slate-800 rounded-lg'></input>
                                 <input type='text' onChange={handleChange} value={paymentform.messgae} name='message' placeholder='Enter Message' className='w-full p-3 bg-slate-800 rounded-lg'></input>
@@ -636,8 +599,8 @@ active:border-b-[2px] active:brightness-90 active:translate-y-[2px]">
                                     Pay
                                 </button>
                             </div>
-                            <div className='flex gap-5 mt-5'>
-                                <button className='p-3 bg-slate-800 rounded-xl' onClick={() => pay(50 * 100)}>Pay 50&#8377;</button>
+                            <div className='flex gap-5 mt-5 text-white'>
+                                <button className='p-3 bg-slate-800  rounded-xl' onClick={() => pay(50 * 100)}>Pay 50&#8377;</button>
                                 <button className='p-3 bg-slate-800 rounded-xl' onClick={() => pay(500 * 100)}>Pay 500&#8377;</button>
                                 <button className='p-3 bg-slate-800 rounded-xl' onClick={() => pay(1000 * 100)}>Pay 100&#8377;</button>
                             </div>

@@ -10,12 +10,15 @@ const PostScheme = new Schema({
       postDescription: {
         type: String,
       },
-      postUrl: {
+      postMediaUrl: {
         type: String,
        
       },
-      postRedirect:{
+      postRedirectURL:{
         type: String,
+      },
+      postVisibility:{
+        type:String
       }
     });
     

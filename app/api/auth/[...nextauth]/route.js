@@ -77,10 +77,10 @@ export const authoptions = NextAuth({
           console.log("Creating User")
           const newUser = await User.create({
             email: user.email,
-            name: user.name,
+            username: user.name,
              })
         }
-        console.log("Created USer")
+        
         return true
       }
     }
@@ -98,6 +98,8 @@ export const authoptions = NextAuth({
       session.user.pageName = dbUser.pageName
       session.user.firstTimeSetupDone = dbUser.firstTimeSetupDone
       session.user.name = dbUser.name;
+      session.user.pageName = dbUser.pageName
+      session.user.subscribers = dbUser.subscribed
       return session
     },
   },

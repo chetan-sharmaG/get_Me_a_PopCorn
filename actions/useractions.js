@@ -27,19 +27,23 @@ export const initiate = async (amount, to_username, paymentForm) => {
 export const fetchUser = async (username) => {
 
     await connectDB()
+
     let u = await User.findOne({ pageName: username })
     if (!u) {
         return
     }
-    let user = u.toObject({ flattenObjectIds: true })
-    return user
+    var data = JSON.parse(JSON.stringify(u))
+    
+    return data
 }
 
 export const fetchPayments = async (username) => {
 
     await connectDB()
     let p = await Payment.find({ to_user: username }).sort({ amount: -1 }).lean()
-    return p
+    var data = JSON.parse(JSON.stringify(p))
+    
+    return data
 }
 
 export const checkIfUserExist = async (username) => {
@@ -67,7 +71,8 @@ export const PageCreation = async (email, newpageName, TeamName) => {
         $set: {
             pageName: newpageName,
             firstTimeSetupDone: true,
-            TeamName: TeamName
+            TeamName: TeamName,
+            isfan: false
         }
     }, { new: true })
     if (updatedDetail.TeamName === TeamName && updatedDetail.pageName === newpageName) {
@@ -119,10 +124,11 @@ export const createPost = async (email, form) => {
 
     await connectDB()
     const data = await User.findOneAndUpdate({ email: email }, {
-        $set: {
+        $push: {
             posts: form
-        }}
-        ,{ new: true })
+        }
+    }
+        , { new: true })
     console.log(data)
     if (data) {
         return true
@@ -130,5 +136,60 @@ export const createPost = async (email, form) => {
     else {
         return false
     }
+
+}
+export const joinAsFan = async (email) => {
+
+    await connectDB()
+    const updatedDetail = await User.findOneAndUpdate({ email: email }, {
+        $set: {
+            firstTimeSetupDone: true,
+            isfan: true
+        }
+    }, { new: true })
+    if (updatedDetail) {
+        return true
+    }
+    else {
+        return false
+    }
+}
+
+export const subscribeToCreator = async (email, creator_id) => {
+    await connectDB()
+    const addCreator = await User.findOneAndUpdate({ email: email }, {
+        $addToSet: {
+            subscribed: creator_id
+        }
+    }, { new: true })
+    if (addCreator) {
+        return true
+    }
+    else {
+        return false
+    }
+}
+export const creatorsDetails = async () => {
+    await connectDB()
+    const getUsers = await User.find({ isfan: false }, { pageName: 1, TeamName: 1, description: 1, profilePic: 1, coverPic: 1 });
+    var data = JSON.parse(JSON.stringify(getUsers))
+    console.log(data)
+    return data
+
+
+}
+
+export const searchUser = async (TeamName) => {
+    await connectDB()
+    const getUsers = await User.find(
+        {
+            TeamName: {
+                $regex: TeamName, $options: "i"
+            }
+        }, { pageName: 1, TeamName: 1, description: 1, profilePic: 1, coverPic: 1 })
+
+    var data = JSON.parse(JSON.stringify(getUsers))
+    console.log(data)
+    return data
 
 }

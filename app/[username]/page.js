@@ -10,11 +10,14 @@ const username = async ({ params }) => {
   if (!u) {
     notFound()
   }
-
+  const navDetails = {
+    bg:"bg-slate-700",
+    text:"text-white"
+  }
   return (
     <>
       <div className='bg-slate-800'>
-        <Navbar/>
+        <Navbar color={navDetails}/>
         <PaymentPage username={params.username} />
       </div>
     </>

@@ -656,7 +656,7 @@ const PaymentPage = ({ username }) => {
                         <div className='flex '>
                             {navstate === 0 &&
                                 <>
-                                    <div className="posts w-[90%] sm:w-[80%] mx-auto flex flex-col gap-5 ">
+                                    <div key={navstate} className="posts w-[90%] sm:w-[80%] mx-auto flex flex-col gap-5 ">
                                         {userDetails.email === currentUser.email ?
                                             <span className='text-2xl text-yellow-300 my-2'>Your Recent Posts</span>
                                             : userDetails.subscribers.includes(currentUser._id) ?
@@ -735,7 +735,7 @@ const PaymentPage = ({ username }) => {
                                                             </div>
                                                         </div>)
                                                     } else {
-                                                        return <div className='flex items-center w-[80%] bg-slate-700 p-2 mx-auto text-white text-xl font-bold justify-center '>
+                                                        return <div key={index} className='flex items-center w-[80%] bg-slate-700 p-2 mx-auto text-white text-xl font-bold justify-center '>
                                                             Join the Channel to get exclusive post which are available for Channel Members Only!...
                                                         </div>
                                                     }
@@ -751,19 +751,18 @@ const PaymentPage = ({ username }) => {
                                 </>
                             }
                             {navstate === 1 &&
-                                <>
-                                    <div className='Supporters_Box flex flex-col  sm:flex-row w-[90%] sm:w-[80%] mx-auto gap-3 py-10  '>
+                                
+                                    <div  className='Supporters_Box flex flex-col  sm:flex-row w-[90%] sm:w-[80%] mx-auto gap-3 py-10  '>
                                         <div className={`supporters w-full  sm:w-1/2 bg-slate-900  rounded-lg p-5`}>
                                             <h2 className='text-2xl font-bold my-5 text-orange-200'>Supporters</h2>
-                                            <ul id='style-4' className={`mx-5 ${Payments.length === 0 ? "h-fit " : "h-[300px]"} overflow-y-auto`}>
+                                            <ul key={navstate*2.3} id='style-4' className={`mx-5 ${Payments.length === 0 ? "h-fit " : "h-[300px]"} overflow-y-auto`}>
                                                 {Payments.length === 0 && <div className='text-white '>No Payment Received Yet</div>}
-                                                {Payments.map((item) => {
+                                                {Payments.map((item,index) => {
                                                     if (item.done) {
-                                                        return (<>
-                                                            <>
-                                                                <li className='my-2 text-lg flex gap-2 text-white items-center '><img src={`user${Math.floor(Math.random() * 5) + 1}.gif`} width={50} /><div className='flex flex-wrap gap-x-1'><span className='text-blue-300'> {item.name}</span><span > donated </span><span className='font-bold'>{item.amount}rs</span>with message <span></span> <span className='text-yellow-200'>"{item.message}"</span></div></li>
-                                                            </>
-                                                        </>)
+                                                        return (
+                                                        
+                                                                <li key={item._id} className='my-2 text-lg flex gap-2 text-white items-center '><img src={`user${Math.floor(Math.random() * 5) + 1}.gif`} width={50} /><div className='flex flex-wrap gap-x-1'><span className='text-blue-300'> {item.name}</span><span > donated </span><span className='font-bold'>{item.amount}rs</span>with message <span></span> <span className='text-yellow-200'>"{item.message}"</span></div></li>
+                                                            )
                                                     }
 
                                                 })}
@@ -789,11 +788,11 @@ active:border-b-[2px] active:brightness-90 active:translate-y-[2px] ${currentUse
                                         </div>
 
                                     </div>
-                                </>
+                                
                             }
                             {navstate === 2 &&
                                 <>
-                                    <div className='flex flex-col gap-4 my-10 text-white justify-center items-center mx-auto aboutBox h-[340px] bg-slate-900 w-[60vw]'>
+                                    <div key={navstate} className='flex flex-col gap-4 my-10 text-white justify-center items-center mx-auto aboutBox h-[340px] bg-slate-900 w-[60vw]'>
                                         <Image  src='https://c5.patreon.com/external/creator_onboarding/about-module.png' width={200} height={200} ></Image>
                                         <h1>Introduce yourself</h1>
                                         <span className='w-[70%] text-center'>Help people coming to your page get to know you. Share more about who you are, what you create, and why you're on Popcorn! </span>

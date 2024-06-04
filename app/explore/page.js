@@ -2,12 +2,18 @@
 import React, { useEffect, useState } from 'react'
 import { creatorsDetails } from '@/actions/useractions';
 import { searchUser } from '@/actions/useractions';
+import Navbar from '@/components/Navbar';
 const Explore = () => {
 
     const [allUsers, setallUsers] = useState([])
     const [nouser, setnouser] = useState(false)
     const [cacheUsers, setcacheUsers] = useState([])
     const [searchText, setSearchText] = useState("")
+
+    const navDetails = {
+        bg: "bg-slate-700",
+        text: "text-white"
+    }
 
     useEffect(() => {
         getUsers()
@@ -39,7 +45,8 @@ const Explore = () => {
     }
     return (
         <>
-            <div className='w-[80vw] sm:w-[55vw] mx-auto flex-col gap-5 flex my-10'>
+            <Navbar color={navDetails} />
+            <div className='w-[80vw] sm:w-[55vw] mt-[15vh] mx-auto flex-col gap-5 flex my-10'>
                 <h1 className='text-2xl font-extrabold font-poppins'>A Hundred creators have a home on PopCorn</h1>
                 <div className='relative w-full flex flex-col items-center'>
                     <input
@@ -58,30 +65,30 @@ const Explore = () => {
                         type="text"
                     />
                     <span className="absolute right-[4px] top-[3px] cursor-pointer" onClick={searchUsers} >
-                    <button
+                        <button
                             className="relative right-0 py-3  px-8 text-black text-base font-bold nded-full overflow-hidden bg-white rounded-full transition-all duration-400 ease-in-out shadow-md hover:scale-105 hover:text-white hover:shadow-lg active:scale-90 before:absolute before:top-0 before:-left-full before:w-full before:h-full before:bg-gradient-to-r before:from-blue-500 before:to-blue-300 before:transition-all before:duration-500 before:ease-in-out before:z-[-1] before:rounded-full hover:before:left-0"
                         >
-                           Search
+                            Search
                         </button>
                     </span>
                     <span className="absolute left-[6px]  top-[15px] cursor-pointer" onClick={searchUsers} >
                         <lord-icon
-                        src="https://cdn.lordicon.com/anqzffqz.json"
-                        trigger="loop"
-                        style={{ "width": "30px", "height": "30px" }}>
-                    </lord-icon>
-                        
+                            src="https://cdn.lordicon.com/anqzffqz.json"
+                            trigger="loop"
+                            style={{ "width": "30px", "height": "30px" }}>
+                        </lord-icon>
+
 
                     </span>
 
                 </div>
                 <div className={`cards flex sm:flex-row gap-y-10 flex-col w-full sm:flex-wrap ${allUsers.length !== 1 ? "justify-center" : ""} gap-5  rounded-xl `}>
                     {nouser && <>
-                    <div className='w-[80vw] h-[200px] mt-20 items-center justify-center flex flex-col'>
-                        <img src='/searchError.jpg' className='w-full h-[200px] object-contain'></img>
-                    <span>Please try searching for other keywords</span>
-                    </div>
-                    
+                        <div className='w-[80vw] h-[200px] mt-20 items-center justify-center flex flex-col'>
+                            <img src='/searchError.jpg' className='w-full h-[200px] object-contain'></img>
+                            <span>Please try searching for other keywords</span>
+                        </div>
+
                     </>}
                     {
                         allUsers.map((items, index) => {

@@ -1,10 +1,14 @@
 import React from 'react'
-
+import Navbar from '@/components/Navbar'
 const page = () => {
+    const navDetails = {
+        bg:"bg-slate-700",
+        text:"text-white"
+      }
     return (
         <>
-
-            <div className='flex'>
+            <Navbar color={navDetails}/>
+            <div className='flex mt-[10vh]'>
                 <div className='w-[60vw] mx-auto flex flex-col justify-evenly gap-10 mt-10 mb-20'>
                     <div className='flex flex-col gap-3'>
                         <h1 className='text-4xl'>Welcome to Popcorn!</h1>
